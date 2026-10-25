@@ -1,0 +1,46 @@
+/* variables */
+:root{
+    --main: #0ea5e9;
+}
+
+@font-face {
+    font-family: Quicksand;
+    src: url(/assets/Quicksand/Quicksand-VariableFont_wght.ttf);
+}
+
+/* ---------- */
+/* GLOBAL CSS */
+/* ---------- */
+
+*{
+    font-family: Helvetica;
+    padding: 0;
+    font-size: 1rem;
+}
+
+header {
+    padding: 1rem;
+    background-color: var(--main);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+header h3 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: white;
+}
+
+footer {
+    padding: 1rem;
+    color: white;
+    background-color: var(--main);
+    text-align: center;
+    font-weight: bold;
+}
+
+main {
+    min-height: 84.5vh;
+    padding: 1rem;
+}

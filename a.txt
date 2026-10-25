@@ -1,0 +1,50 @@
+TELA DE GESTÃO DE EVENTOS
+    criar evento
+    confirmar presença num evento
+    concluir evento
+    cancelar evento
+
+TELA DE CONFIGURAÇÕES DE EVENTO	
+    criar cronograma
+    deletar cronograma
+    criaItemServico
+    deletaItemServicow
+
+    OUTRAS OPÇÕES GREYED OUT ATÉ ACABAR O EVENTO
+        geraRelatorio
+        assinaRelatorio
+        insereFotoRelatorio
+        deletaFotoRelatorio
+
+TELA DE GESTÃO DE CLIENTES
+    criaCliente
+    deletaCliente
+
+TELA DE GESTÃO DE LOCALIZAÇÕES
+    criaLocalização
+    deletaLocalização
+
+TELA DE CRIAÇÃO DE ORÇAMENTOS (para clientes)
+    criaOrçamento
+    alteraOrçamento
+
+TELA DE CRIAÇÃO DE PAGAMENTOS (para clientes)
+    criaPagamento
+    deletaPagamento
+
+TELA DE CADASTRO DE PARTICIPANTE (para guests)
+criaParticipante
+deletaParticipante
+
+TELA DE GESTÃO DE INGRESSOS (para participantes)
+    compraIngresso
+    confirmaIngresso
+    deletaIngresso
+
+TELA DE GESTÃO DE FORNECEDORES
+    criaFornecedor
+    desativaFornecedor
+
+TELA DE GESTÃO DE SERVIÇOS
+    criaServico
+    desativaServico
