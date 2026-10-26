@@ -14,10 +14,8 @@
         <i data-lucide="wind" color="white" width="48px" height="48px"></i>
     </header>
 
-    <!-- Código aqui-->
     <main>
-        
-        <div id="login" class="shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+        <div id="login" class="rounded-lg shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
             <div class="logo flex items-center gap-2">
                 <h3 class="font-bold text-sky-500 text-2xl!">JOINVENTOS</h3>
                 <i data-lucide="wind" color="#0ea5e9" width="48px" height="48px"></i>
@@ -25,12 +23,14 @@
 
             <form action="" class="flex flex-col gap-2">
                 <div>
-                    <input type="radio" name="tipoCliente" id="cliente" value="cliente">
-                    <label for="cliente" checked>Quero criar e gerir eventos</label>
-                </div>
-                <div>
-                    <input type="radio" name="tipoCliente" id="participante" value="participante">
-                    <label for="participante">Quero participar de eventos</label>
+                    <div>
+                        <input type="radio" name="tipoCliente" id="cliente" value="cliente">
+                        <label for="cliente" checked>Quero criar e gerir eventos</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="tipoCliente" id="participante" value="participante">
+                        <label for="participante">Quero participar de eventos</label>
+                    </div>
                 </div>
                 <div>
                     <label for="nome">NOME COMPLETO</label><br>
@@ -54,8 +54,8 @@
                 </div>
             </form>
 
-            <button type="submit">CADASTRAR</button>
-            <i><a href="">Já tem uma conta? Clique para logar</a></i>
+            <button type="submit" class="mt-2">CADASTRAR</button>
+            <i><a href="/login.html">Já tem uma conta? Clique para logar</a></i>
         </div>
     </main>
 
