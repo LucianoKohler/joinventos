@@ -18,3 +18,8 @@ radioCliente.addEventListener("click", () => {
     endereco.disabled = false;
     cpf.disabled = false;
 });
+
+
+const clientes = await fetch('http://localhost:3000/api/dados');
+const clientesParsed = await clientes.json();
+console.log(clientesParsed)

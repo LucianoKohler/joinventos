@@ -30,6 +30,7 @@ create table Localizacao(
 create table Cliente(
 	idCliente serial primary key,
 	nome varchar(50) not null,
+	senha text not null,
 	telefone varchar(25) not null,
 	email varchar(40),
 	endereco varchar(100),
@@ -160,6 +161,7 @@ create table Cronograma(
 create table Participante(
 	idParticipante serial primary key,
 	nome varchar(50) not null,
+	senha text not null,
 	telefone varchar(25) not null,
 	email varchar(40)
 );
