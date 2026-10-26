@@ -33,8 +33,8 @@ TELA DE CRIAÇÃO DE PAGAMENTOS (para clientes)
     deletaPagamento
 
 TELA DE CADASTRO DE PARTICIPANTE (para guests)
-criaParticipante
-deletaParticipante
+    criaParticipante
+    deletaParticipante
 
 TELA DE GESTÃO DE INGRESSOS (para participantes)
     compraIngresso
@@ -48,3 +48,7 @@ TELA DE GESTÃO DE FORNECEDORES
 TELA DE GESTÃO DE SERVIÇOS
     criaServico
     desativaServico
+
+TELA DE GESTÃO DE PALESTRANTES
+    criaPalestrante
+    desativaPalestrante

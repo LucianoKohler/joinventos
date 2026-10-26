@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <h3>JOINVENTOS</h3>
+        <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+    </header>
+
+    <!-- Código aqui-->
+    <main>
+        
+        <div id="login" class="shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+            <div class="logo flex items-center gap-2">
+                <h3 class="font-bold text-sky-500 text-2xl!">JOINVENTOS</h3>
+                <i data-lucide="wind" color="#0ea5e9" width="48px" height="48px"></i>
+            </div>
+
+            <form action="" class="flex flex-col gap-2">
+                <div>
+                    <input type="radio" name="tipoCliente" id="cliente" value="cliente">
+                    <label for="cliente" checked>Quero criar e gerir eventos</label>
+                </div>
+                <div>
+                    <input type="radio" name="tipoCliente" id="participante" value="participante">
+                    <label for="participante">Quero participar de eventos</label>
+                </div>
+                <div>
+                    <label for="nome">NOME COMPLETO</label><br>
+                    <input type="text" name="nome" id="nome"><br>
+                </div>
+                <div>
+                    <label for="telefone">TELEFONE</label><br>
+                    <input type="text" name="telefone" id="telefone"><br>
+                </div>
+                <div>
+                    <label for="email">E-MAIL</label><br>
+                    <input type="text" name="email" id="email"><br>
+                </div>
+                <div>
+                    <label for="endereco">ENDEREÇO</label><br>
+                    <input type="text" name="endereco" id="endereco"><br>
+                </div>
+                <div>
+                    <label for="cpf">CPF/CNPJ</label><br>
+                    <input type="text" name="cpf" id="cpf"><br>
+                </div>
+            </form>
+
+            <button type="submit">CADASTRAR</button>
+            <i><a href="">Já tem uma conta? Clique para logar</a></i>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/cadastro.js"></script>
+</body>
+</html>

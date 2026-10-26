@@ -44,3 +44,32 @@ main {
     min-height: 84.5vh;
     padding: 1rem;
 }
+
+a {
+    color: cornflowerblue;
+    text-decoration: underline;
+}
+
+button[type=submit] {
+    padding: 1rem 1.5rem;
+    border-radius: .5rem;
+    color: white;
+    font-weight: bold;
+    background: var(--main);
+    cursor: pointer;
+    transition: all .1s;
+}
+
+button[type=submit]:hover{filter: brightness(120%);}
+button[type=submit]:active{filter: brightness(140%);}
+
+input{
+    border: 1px solid var(--main);
+    border-radius: 5px;
+    padding: 6px;
+}
+
+input[disabled]{
+    background-color: rgb(241, 241, 241);
+    border: 1px solid gray;
+}
