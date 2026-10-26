@@ -30,6 +30,24 @@ app.get('/api/dados', async (req, res) => {
     }
 });
 
+app.get('/api/debug-tabelas', async (req, res) => {
+    try {
+        const resultado = await pool.query(`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public';
+        `);
+        
+        res.json({
+            sucesso: true,
+            tabelasEncontradas: resultado.rows
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ erro: 'Erro ao consultar o banco', detalhe: err.message });
+    }
+});
+
 // Abre o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

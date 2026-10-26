@@ -27,7 +27,7 @@ create table Localizacao(
 	infraDisp text
 );
 
-create table Cliente(
+create table cliente(
 	idCliente serial primary key,
 	nome varchar(50) not null,
 	senha text not null,
@@ -158,7 +158,7 @@ create table Cronograma(
 	idEvento int not null references Evento on delete cascade
 );
 
-create table Participante(
+create table participante(
 	idParticipante serial primary key,
 	nome varchar(50) not null,
 	senha text not null,

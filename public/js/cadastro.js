@@ -1,8 +1,8 @@
 
-let radioParticipante = document.getElementById("participante");
-let radioCliente = document.getElementById("cliente");
-let endereco = document.getElementById("endereco");
-let cpf = document.getElementById("cpf");
+const radioParticipante = document.getElementById("participante");
+const radioCliente = document.getElementById("cliente");
+const endereco = document.getElementById("endereco");
+const cpf = document.getElementById("cpf");
 
 if(radioParticipante.checked){
     endereco.disabled = true;
@@ -19,7 +19,58 @@ radioCliente.addEventListener("click", () => {
     cpf.disabled = false;
 });
 
+// ROTAS
 
-const clientes = await fetch('http://localhost:3000/api/dados');
-const clientesParsed = await clientes.json();
-console.log(clientesParsed)
+document.addEventListener("DOMContentLoaded", ()=> {
+    const formCadastro = document.getElementById("formCadastro");
+
+    if(formCadastro){
+        formCadastro.addEventListener("submit", async (e) => {
+            e.preventDefault(); // Não recarrega a página
+
+            const nome = document.getElementById("nome").value;
+            const senha = document.getElementById("senha").value;
+            const email = document.getElementById("email").value;
+            const telefone = document.getElementById("telefone").value;
+            const cpf_cnpj = document.getElementById("cpf").value;
+
+            let dadosUsuario;
+            if(radioCliente.checked){
+                dadosUsuario = {
+                    nome: nome,
+                    senha: senha,
+                    email: email,
+                    telefone: telefone,
+                    cpf_cnpj: cpf_cnpj
+                }
+            }else{
+                dadosUsuario = {
+                    nome: nome,
+                    senha: senha,
+                    telefone: telefone,
+                    email: email,
+                }
+            }
+
+            try {
+                let caminho = "participante"
+                if(radioCliente.checked){caminho = "cliente"}
+                const res = await fetch(`http://localhost:3000/api/users/cadastro/${caminho}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosUsuario)
+                });
+
+                const resultado = await res.json();
+                if(res.ok){
+                    alert(resultado.mensagem || 'Cadastro realizado!');
+                    formCadastro.reset();
+                }else{
+                    alert("Erro ao cadastrar...");
+                }
+            } catch (e) {
+                alert('Erro de conexão com o servidor:', e);
+            }
+        })
+    }
+});

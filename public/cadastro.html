@@ -22,11 +22,11 @@
                 <i data-lucide="wind" color="#0ea5e9" width="48px" height="48px"></i>
             </div>
 
-            <form action="" class="flex flex-col gap-2">
+            <form id="formCadastro" class="flex flex-col gap-2">
                 <div>
                     <div>
-                        <input type="radio" name="tipoCliente" id="cliente" value="cliente">
-                        <label for="cliente" checked>Quero criar e gerir eventos</label>
+                        <input checked type="radio" name="tipoCliente" id="cliente" value="cliente">
+                        <label for="cliente">Quero criar e gerir eventos</label>
                     </div>
                     <div>
                         <input type="radio" name="tipoCliente" id="participante" value="participante">
@@ -57,10 +57,10 @@
                     <label for="cpf">CPF/CNPJ</label><br>
                     <input type="text" name="cpf" id="cpf"><br>
                 </div>
+                <button type="submit" class="mt-2">CADASTRAR</button>
+                <i><a href="/login.html">Já tem uma conta? Clique para logar</a></i>
             </form>
 
-            <button type="submit" class="mt-2">CADASTRAR</button>
-            <i><a href="/login.html">Já tem uma conta? Clique para logar</a></i>
         </div>
     </main>
 
