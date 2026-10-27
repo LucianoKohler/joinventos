@@ -52,3 +52,7 @@ TELA DE GESTÃO DE SERVIÇOS
 TELA DE GESTÃO DE PALESTRANTES
     criaPalestrante
     desativaPalestrante
+
+
+TODO:
+    Evitar cadastros com mesmo email
