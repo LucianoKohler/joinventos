@@ -17,7 +17,12 @@ router.post('/cadastro/cliente', async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;`, 
             [nome, senhaCript, telefone, email, endereco, cpf_cnpj]);
-            res.status(201).json({ mensagem: 'Cliente cadastrado com sucesso!', usuario: out.rows[0] });    } catch (e) {
+            res.status(201).json({ 
+                mensagem: 'Cliente cadastrado com sucesso!', 
+                token: out.rows[0].idcliente,
+                tipo: 'cliente'
+            });    
+        } catch (e) {
         console.log(e);
             res.status(500).json({ erro: 'Cadastro de cliente falhou' });
     }
@@ -37,28 +42,11 @@ router.post('/cadastro/participante', async (req, res) => {
             VALUES ($1, $2, $3, $4)
             RETURNING *;`, 
             [nome, senhaCript, telefone, email]);
-            res.status(201).json({ mensagem: 'Participante cadastrado com sucesso!', usuario: out.rows[0] });    
-        } catch (e) {
-        console.log(e);
-            res.status(500).json({ erro: 'Cadastro de participante falhou' });
-    }
-});
-
-// Cadastro de participante
-router.post('/cadastro/participante', async (req, res) => {
-    const { nome, senha, telefone, email } = req.body;
-
-    // Hash de senha
-    const senhaCript = await bcrypt.hash(senha, 10); // 10 = n° saltos
-
-    try {
-        const out = await db.query(
-            `INSERT INTO participante (nome, senha, 
-            telefone, email)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;`, 
-            [nome, senhaCript, telefone, email]);
-            res.status(201).json({ mensagem: 'Participante cadastrado com sucesso!', usuario: out.rows[0] });    
+            res.status(201).json({ 
+                mensagem: 'Participante cadastrado com sucesso!', 
+                token: out.rows[0].idparticipante,
+                tipo: 'participante'
+            });    
         } catch (e) {
         console.log(e);
             res.status(500).json({ erro: 'Cadastro de participante falhou' });
@@ -82,10 +70,11 @@ router.post('/login', async (req, res) => {
                 return res.status(403).json({ mensagem: 'E-mail ou senha incorretos' });
             }
 
+            console.log(resultado.rows);
             return res.status(200).json({ 
                 mensagem: 'Login efetivado!', 
-                token: usuario.email, 
-                tipo: 'Participante' 
+                token: usuario.idparticipante, 
+                tipo: 'participante' 
             });
         }
 
@@ -105,8 +94,8 @@ router.post('/login', async (req, res) => {
 
             return res.status(200).json({ 
                 mensagem: 'Login efetivado!', 
-                token: usuario.email, 
-                tipo: 'Cliente' 
+                token: usuario.idcliente, 
+                tipo: 'cliente' 
             });
         }
 

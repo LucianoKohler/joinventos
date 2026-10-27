@@ -22,8 +22,10 @@ document.addEventListener("DOMContentLoaded", ()=> {
                 if(res.ok){
                     alert(`${resultado.mensagem || 'Login efetivado!'} Token: ${resultado.token}`);
                     localStorage.setItem('token', resultado.token); // "gera o token"
-                    console.log(resultado.tipo);
                     formLogin.reset();
+
+                    let caminho = resultado.tipo == 'cliente' ? 'Cliente' : 'Participante';
+                    window.location.href = `./home${caminho}`;
                 }else{
                     alert(`Erro no login: ${resultado.mensagem}`);
                 }

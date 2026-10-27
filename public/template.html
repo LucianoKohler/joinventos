@@ -11,8 +11,14 @@
 </head>
 <body>
     <header>
-        <h3>JOINVENTOS</h3>
-        <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./login.html'; localStorage.removeItem('token')" class="flex items-center gap-2 cursor-pointer">
+            <p class="text-white">LOGOUT</p>
+            <i data-lucide="log-out" stroke-width="3px" color="white"></i>
+        </button>
     </header>
 
     <!-- Código aqui-->
