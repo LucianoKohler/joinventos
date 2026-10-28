@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", ()=> {
                     alert(resultado.mensagem || 'Cadastro realizado!');
                     localStorage.setItem('token', resultado.token);
                     let caminho = resultado.tipo == 'cliente' ? 'Cliente' : 'Participante'
-                    window.location.href = `./home${caminho}`
+                    window.location.href = `./home${caminho}.html`
                 }else{
                     alert("Erro ao cadastrar...");
                 }

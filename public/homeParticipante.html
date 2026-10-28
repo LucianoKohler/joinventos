@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/evento.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./login.html'; localStorage.removeItem('token')" class="flex items-center gap-2 cursor-pointer">
+            <p class="text-white">LOGOUT</p>
+            <i data-lucide="log-out" stroke-width="3px" color="white"></i>
+        </button>
+    </header>
+
+    <!-- Código aqui-->
+    <main class="flex gap-8">
+        <aside class="shadow-2xl">
+            <h1>SEUS EVENTOS</h1>
+            <div class="divider">
+                <hr>
+                <p>Eventos Futuros</p>
+            </div>
+            <div id="eventosFuturos"></div>
+            <div class="divider">
+                <hr>
+                <p>Eventos Passados</p>
+            </div>
+            <div id="eventosPassados"></div>
+        </aside>
+        <div class="mainDiv shadow-2xl">
+            <h1>TODOS OS EVENTOS</h1>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/homeParticipante.js"></script>
+</body>
+</html>

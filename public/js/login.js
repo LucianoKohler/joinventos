@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", ()=> {
                     formLogin.reset();
 
                     let caminho = resultado.tipo == 'cliente' ? 'Cliente' : 'Participante';
-                    window.location.href = `./home${caminho}`;
+                    window.location.href = `./home${caminho}.html`;
                 }else{
                     alert(`Erro no login: ${resultado.mensagem}`);
                 }
