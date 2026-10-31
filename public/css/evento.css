@@ -1,50 +1,65 @@
-#eventosFuturos, #eventosPassados {
+main {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 }
 
-.evento-card {
-    padding: 10px;
-    border: 1px solid var(--main);
-    border-radius: 10px;
-    width: 400px;
+hr {
+    margin: 10px 0 !important;
 }
 
-.evento-card h3 {
-    font-weight: bold;
-    font-size: 1.5rem;
+aside    { width: 30%; }
+#mainDiv { width: 70%; }
+
+aside, #mainDiv {
+    padding: 20px;
+
+}
+
+h1 {
+    font-size: 2rem !important;
+    line-height: 90%;
+}
+
+h2 {
     color: var(--main);
-    line-height: 110%;
-}
-
-.evento-card hr {
-    border: 2px solid var(--main);
-    margin: 6px 0;
-    border-radius: 10px;
-    transform: translateY(-3px);
-}
-
-.card-status {
-    background-color: var(--main);
-    padding: 5px 10px;
-    color: white;
+    font-size: 1.5rem;
     font-weight: bold;
-    border-radius: 20px;
 }
 
-.sem-eventos {
+.horario, .localizacao, .outros {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+b {
+    color: var(--main);
+}
+
+.break {
+    width: 100%;
+}
+
+#cadastrado, #nao-cadastrado {
+    height: 100%;
     text-align: center;
+    display: none;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
-.btn-detalhes {
-    background-color: var(--main);
-    color: white;
-    padding: 10px 12px;
+button {   
+    display: flex;
+    justify-content: center;
+    gap: 10px;
     border-radius: 5px;
-    cursor: pointer;
-    float: right;
+    color: white;
+    width: 200px;
+    padding: 10px 10px;
+    margin: 10px;
 }
 
-.btn-detalhes:hover  { filter: brightness(120%);}
-.btn-detalhes:active { filter: brightness(140%);}
+.cancelar {background: var(--red); }
+.confirmar {background: var(--green); }
+.cadastrar {background: var(--green); }

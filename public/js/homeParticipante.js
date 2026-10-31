@@ -7,8 +7,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    await Promise.all([
+        carregarMeusEventos(idParticipante),
+        carregarTodosEventos(idParticipante)
+    ]);
+});
+
+// QUERY 1: apenas eventos inscritos
+
+async function carregarMeusEventos(idParticipante) {
     const containerFuturos = document.getElementById("eventosFuturos");
     const containerPassados = document.getElementById("eventosPassados");
+
+    if (!containerFuturos || !containerPassados) return;
 
     try {
         const resposta = await fetch(`http://localhost:3000/api/eventos/inscritos/${idParticipante}`);
@@ -17,52 +28,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (resposta.ok) {
             const eventos = dados.eventos;
 
-            if (eventos.length === 0) {
+            containerFuturos.innerHTML = "";
+            containerPassados.innerHTML = "";
+
+            if (!eventos || eventos.length === 0) {
                 containerFuturos.innerHTML = `<p class="sem-eventos">Você ainda não está inscrito em nenhum evento.</p>`;
                 containerPassados.innerHTML = `<p class="sem-eventos">Nenhum evento no histórico.</p>`;
                 return;
             }
 
-            containerFuturos.innerHTML = "";
-            containerPassados.innerHTML = "";
-
             let temFuturos = false;
             let temPassados = false;
 
-            // Reinicia o horário atual
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
 
             eventos.forEach(evento => {
-                // Tratamento das datas
-                const dataEventoStr = evento.datainicio.split('T')[0];
-                const [ano, mes, dia] = dataEventoStr.split('-');
-                const dataEvento = new Date(ano, mes - 1, dia);
-
-                const dataFormatada = dataEvento.toLocaleDateString('pt-BR');
+                const dataRaw = evento.data_evento || evento.datainicio;
+                const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 
-                const statusBadge = evento.confirmado 
-                    ? `Confirmado` 
-                    : `Pendente`;
+                let dataFormatada = 'Data a definir';
+                let dataEvento = new Date();
+
+                if (dataEventoStr) {
+                    const [ano, mes, dia] = dataEventoStr.split('-');
+                    dataEvento = new Date(ano, mes - 1, dia);
+                    dataFormatada = `${dia}/${mes}/${ano}`;
+                }
+
+                let statusBadge = '';
+                if (evento.confirmacao === true) {
+                    statusBadge = `<span class="badge confirmado">Confirmado</span>`;
+                } else {
+                    statusBadge = `<span class="badge pendente">Não confirmado</span>`;
+                }
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
                         <div class="card-header">
                             <h3>${evento.nome_evento}</h3>
                             <hr>
-                            <span class="card-status">${statusBadge} - ${dataFormatada}</span>
+                            ${statusBadge}
+                            <span class="badge data">${dataFormatada}</span>
                         </div>
                         <div class="card-body">
                             <p><i>${evento.descricao || 'Sem descrição'}</i></p>
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div class="card-footer">
-                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Ingressos</button>
+                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
                 `;
 
-                
                 if (dataEvento >= hoje) {
                     containerFuturos.innerHTML += cardHTML;
                     temFuturos = true;
@@ -72,23 +90,85 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             });
 
-            if (!temFuturos) {
-                containerFuturos.innerHTML = `<p class="sem-eventos">Você não tem próximos eventos agendados.</p>`;
-            }
-            if (!temPassados) {
-                containerPassados.innerHTML = `<p class="sem-eventos">Você não possui histórico de eventos passados.</p>`;
-            }
+            if (!temFuturos) containerFuturos.innerHTML = `<p class="sem-eventos">Você não tem próximos eventos agendados.</p>`;
+            if (!temPassados) containerPassados.innerHTML = `<p class="sem-eventos">Você não possui histórico de eventos passados.</p>`;
 
         } else {
-            alert(`Erro: ${dados.erro}`);
+            console.error("Erro na busca de inscritos:", dados.erro);
         }
-
     } catch (e) {
-        console.error("Erro de conexão:", e);
-        alert("Não foi possível carregar os seus eventos.");
+        console.error("Erro de conexão (inscritos):", e);
     }
-});
+}
+
+// QUERY 2: todos os eventos 
+async function carregarTodosEventos(idParticipante) {
+    const mainContent = document.getElementById("mainContent");
+    if (!mainContent) return;
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/api/eventos/todos/${idParticipante}`);
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+            const eventos = dados.eventos;
+
+            if (!eventos || eventos.length === 0) {
+                mainContent.innerHTML = `<p class="sem-eventos">Nenhum evento cadastrado no sistema.</p>`;
+                return;
+            }
+
+            mainContent.innerHTML = "";
+
+            eventos.forEach(evento => {
+                const dataRaw = evento.data_evento || evento.datainicio;
+                const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
+                let dataFormatada = 'Data a definir';
+
+                if (dataEventoStr) {
+                    const [ano, mes, dia] = dataEventoStr.split('-');
+                    dataFormatada = `${dia}/${mes}/${ano}`;
+                }
+
+                // Definição das 3 flags
+                let statusBadge = '';
+                if (!evento.idingresso) {
+                    statusBadge = `<span class="badge nao-cadastrado">Não cadastrado</span>`;
+                } else if (evento.confirmacao === true) {
+                    statusBadge = `<span class="badge confirmado">Confirmado</span>`;
+                } else {
+                    statusBadge = `<span class="badge pendente">Não confirmado</span>`;
+                }
+
+                const cardHTML = `
+                    <div class="evento-card shadow-xl">
+                        <div class="card-header">
+                            <h3>${evento.nome_evento}</h3>
+                            <hr>
+                            ${statusBadge}
+                            <span class="badge data">${dataFormatada}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><i>${evento.descricao || 'Sem descrição'}</i></p>
+                            <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
+                        </div>
+                    </div>
+                `;
+
+                mainContent.innerHTML += cardHTML;
+            });
+
+        } else {
+            console.error("Erro na busca de todos os eventos:", dados.erro);
+        }
+    } catch (e) {
+        console.error("Erro de conexão (todos os eventos):", e);
+    }
+}
 
 function verDetalhes(idEvento) {
-    console.log("Clicou no evento ID:", idEvento);
+    window.location.href = "./eventoParticipante.html?idevento=" + idEvento
 }

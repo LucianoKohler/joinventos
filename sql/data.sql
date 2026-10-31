@@ -58,7 +58,7 @@ INSERT INTO participante (nome, senha, telefone, email) VALUES
 INSERT INTO Evento (nomeEvento, idCategoriaEvento, dataInicio, dataTermino, horarioInicio, horarioTermino, valorIngresso, numParticipantes, status, idCliente, idLocalizacao, descricao) VALUES 
 ('Seminário de Tecnologia e Inovação 2026', 4, '2026-07-15', '2026-07-15', '08:00:00', '18:00:00', 150.00, 200, 'CONFIRMADO', 1, 2, 'Um dia inteiro de palestras focadas nas tendências de tecnologia para o mercado corporativo.'),
 ('Workshop de Desenvolvimento Web Moderno', 5, '2026-08-10', '2026-08-10', '13:30:00', '19:00:00', 80.00, 50, 'EM_PREPARACAO', 1, 1, 'Mão na massa com arquitetura de aplicações web eficientes e seguras.'),
-('Confraternização Anual de Fim de Ano', 7, '2026-12-20', '2026-12-20', '20:00:00', '03:00:00', 200.00, 120, 'ORCAMENTO', 2, 3, 'Festa com buffet completo e música ao vivo para fechar o ano com chave de ouro.');
+('Confraternização Anual de Fim de Ano', 7, '2026-12-20', '2026-12-20', '20:00:00', '03:00:00', 200.00, 120, 'CONFIRMADO', 2, 3, 'Festa com buffet completo e música ao vivo para fechar o ano com chave de ouro.');
 
 INSERT INTO Servico (unidMedida, ativo, valorUnit, idCategoriaServico, descricao) VALUES 
 ('Pessoa', true, 75.00, 1, 'Serviço de buffet completo (entrada, prato principal e sobremesa).'),

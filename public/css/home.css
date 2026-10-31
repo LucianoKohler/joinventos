@@ -4,6 +4,12 @@ h1 {
     font-weight: bold;
 }
 
+hr {
+    border: 2px solid var(--main);    
+    border-radius: 5px;
+    margin: 5px;
+}
+
 aside {
     padding: 1rem;
 }
@@ -29,6 +35,73 @@ aside {
     width: fit-content;
     margin: 0 auto;
     padding: 0 4px;
-    transform: translateY(-16px);
+    transform: translateY(-20px);
     background-color: white;
 }
+
+/*ESTILIZAÇÃO DOS EVENTOS*/
+#eventosFuturos, #eventosPassados {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.evento-card {
+    padding: 10px;
+    border: 3px solid var(--main);
+    border-radius: 10px;
+    flex-grow: 1;
+    width: 300px;
+    height: 350px;
+    position: relative;
+}
+
+.evento-card h3 {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--main);
+    line-height: 110%;
+}
+
+.evento-card hr {
+    border: 2px solid var(--main);
+    margin: 6px 0;
+    border-radius: 10px;
+    transform: translateY(-3px);
+}
+
+.badge {
+    background-color: var(--main);
+    padding: 5px 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+}
+
+.sem-eventos {
+    text-align: center;
+}
+
+.btn-detalhes {
+    background-color: var(--main);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    float: right;
+
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.btn-detalhes:hover  { filter: brightness(120%);}
+.btn-detalhes:active { filter: brightness(140%);}
+
+.badge {
+    color: white;
+}
+
+.confirmado     { background: var(--green); }
+.pendente       { background: var(--red); }
+.nao-cadastrado { background: var(--main); }

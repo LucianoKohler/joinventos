@@ -1,6 +1,8 @@
 /* variables */
 :root{
     --main: #0ea5e9;
+    --green: rgb(35, 194, 75);
+    --red: rgb(191, 28, 28);
 }
 
 @font-face {
@@ -41,6 +43,10 @@ footer {
     font-weight: bold;
 }
 
+button:enabled {cursor: pointer;}
+button:hover:enabled {filter: brightness(120%);}
+button:active:enabled {filter: brightness(140%);}
+
 main {
     min-height: 83vh;
     padding: 1rem;
@@ -57,12 +63,13 @@ button[type=submit] {
     color: white;
     font-weight: bold;
     background: var(--main);
-    cursor: pointer;
     transition: all .1s;
 }
 
-button[type=submit]:hover{filter: brightness(120%);}
-button[type=submit]:active{filter: brightness(140%);}
+button:disabled {
+    filter: brightness(70%);
+    user-select: none;
+}
 
 input{
     border: 1px solid var(--main);
