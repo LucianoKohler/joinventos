@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos - Criar Evento</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+    </header>
+
+    <main>
+        <div id="login" class="rounded-lg shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+            <div class="logo flex items-center gap-2">
+                <h3 class="font-bold text-sky-500 text-2xl!">NOVO EVENTO</h3>
+                <i data-lucide="calendar-plus" color="#0ea5e9" width="40px" height="40px"></i>
+            </div>
+
+            <form id="formCriarEvento" class="flex flex-col gap-2 w-full">
+                <div>
+                    <label for="nomeEvento">NOME DO EVENTO</label><br>
+                    <input type="text" name="nomeEvento" id="nomeEvento" required class="w-full"><br>
+                </div>
+
+                <div>
+                    <label for="idCategoriaEvento">CATEGORIA</label><br>
+                    <select name="idCategoriaEvento" id="idCategoriaEvento" required class="w-full">
+                        <option value="">Selecione uma categoria...</option>
+                    </select><br>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label for="dataInicio">DATA DE INÍCIO</label><br>
+                        <input type="date" name="dataInicio" id="dataInicio" required class="w-full"><br>
+                    </div>
+                    <div class="flex-1">
+                        <label for="dataTermino">DATA DE TÉRMINO</label><br>
+                        <input type="date" name="dataTermino" id="dataTermino" required class="w-full"><br>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label for="horarioInicio">HORÁRIO INÍCIO</label><br>
+                        <input type="time" name="horarioInicio" id="horarioInicio" required class="w-full"><br>
+                    </div>
+                    <div class="flex-1">
+                        <label for="horarioTermino">HORÁRIO TÉRMINO</label><br>
+                        <input type="time" name="horarioTermino" id="horarioTermino" required class="w-full"><br>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label for="valorIngresso">VALOR (R$)</label><br>
+                        <input type="number" step="0.01" min="0" name="valorIngresso" id="valorIngresso" required class="w-full"><br>
+                    </div>
+                    <div class="flex-1">
+                        <label for="numParticipantes">PARTICIPANTES</label><br>
+                        <input type="number" min="1" name="numParticipantes" id="numParticipantes" required class="w-full"><br>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="idLocalizacao">LOCALIZAÇÃO</label><br>
+                    <select name="idLocalizacao" id="idLocalizacao" required class="w-full">
+                        <option value="">Selecione uma localização...</option>
+                    </select><br>
+                </div>
+
+                <div>
+                    <label for="descricao">DESCRIÇÃO</label><br>
+                    <textarea name="descricao" id="descricao" rows="3" class="w-full p-2 border rounded-md"></textarea><br>
+                </div>
+
+                <button type="submit" class="mt-2 cursor-pointer">CRIAR EVENTO</button>
+                <i><a href="./homeCliente.html">Voltar ao painel</a></i>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/criarEvento.js"></script>
+</body>
+</html>

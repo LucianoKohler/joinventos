@@ -40,7 +40,7 @@ b {
     width: 100%;
 }
 
-#cadastrado, #nao-cadastrado {
+#cadastrado, #nao-cadastrado, #evento-futuro, #nao-seu-evento, #evento-passado, #evento-cancelado {
     height: 100%;
     text-align: center;
     display: none;
@@ -63,3 +63,4 @@ button {
 .cancelar {background: var(--red); }
 .confirmar {background: var(--green); }
 .cadastrar {background: var(--green); }
+.relatorio {background-color: var(--main);}

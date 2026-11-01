@@ -225,7 +225,7 @@ begin
 	select capMaxima from Localizacao where idLocalizacao = idLocalizacao_p into v_capMaxima;
 
 	if (numParticipantes_p > v_capMaxima) then
-		raise exception 'Número de participantes excede capacidade máxima da localização com ID %! Criação de evento cancelada.', idLocalizacao_p;
+		raise exception 'Número de participantes excede capacidade máxima do local1 Criação de evento cancelada.';
 	end if;
 
 	insert into Evento(nomeEvento, idCategoriaEvento, dataInicio, dataTermino, horarioInicio, horarioTermino, 

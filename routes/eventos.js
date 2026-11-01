@@ -2,6 +2,21 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
+// ROTAS PARA CLIENTES
+router.get('/criados/:idcliente', async (req, res) => {
+    const { idcliente } = req.params;
+    try {
+        const query = 'SELECT * FROM evento WHERE idcliente = $1 ORDER BY datainicio DESC;';
+        const resultado = await db.query(query, [idcliente]);
+        return res.status(200).json({ sucesso: true, eventos: resultado.rows });
+    } catch (e) {
+        console.error("Erro ao buscar eventos criados:", e);
+        return res.status(500).json({ erro: 'Erro interno ao buscar eventos.' });
+    }
+});
+
+
+// ROTAS PARA PARTICIPANTES
 router.get('/inscritos/:idparticipante', async (req, res) => {
     const { idparticipante } = req.params;
 
@@ -64,56 +79,6 @@ router.get('/todos/:idparticipante', async (req, res) => {
     }
 });
 
-// Busca evento por ID
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { idparticipante } = req.query; // Recebe opcionalmente via URL (?idparticipante=...)
-
-    try {
-        const query = `
-            SELECT 
-                e.idevento, 
-                e.nomeevento AS nome_evento, 
-                e.descricao, 
-                e.datainicio, 
-                e.datatermino, 
-                e.horarioinicio, 
-                e.horariotermino, 
-                e.valoringresso, 
-                e.numparticipantes, 
-                e.status, 
-                c.nomecategoria AS categoria,
-                l.nome AS nome_local, 
-                l.endereco AS endereco_local, 
-                l.infradisp,
-                cl.nome AS nome_cliente,
-                i.idingresso,
-                i.confirmacao
-            FROM evento e
-            LEFT JOIN categoriaevento c ON e.idcategoriaevento = c.idcategoriaevento
-            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
-            LEFT JOIN cliente cl ON e.idcliente = cl.idcliente
-            LEFT JOIN ingresso i ON e.idevento = i.idevento AND i.idparticipante = $2
-            WHERE e.idevento = $1;
-        `;
-
-        const resultado = await db.query(query, [id, idparticipante || null]);
-
-        if (resultado.rowCount === 0) {
-            return res.status(404).json({ erro: 'Evento não encontrado.' });
-        }
-
-        return res.status(200).json({
-            sucesso: true,
-            evento: resultado.rows[0]
-        });
-
-    } catch (e) {
-        console.error("Erro ao buscar detalhes do evento:", e);
-        return res.status(500).json({ erro: 'Erro interno ao buscar detalhes do evento.' });
-    }
-});
-
 router.post('/entrarEvento/', async (req, res) => {
     const { idevento, idparticipante } = req.body;
 
@@ -161,6 +126,155 @@ router.delete('/cancelar/:idingresso', async (req, res) => {
     } catch (e) {
         console.error("Erro ao cancelar ingresso:", e);
         return res.status(400).json({ sucesso: false, mensagem: 'Erro ao cancelar ingresso' });
+    }
+});
+
+// ROTA GENÉRICA
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { idparticipante } = req.query;
+
+    try {
+        const query = `
+            SELECT 
+                e.idevento, 
+                e.nomeevento AS nome_evento, 
+                e.descricao, 
+                e.datainicio, 
+                e.datatermino, 
+                e.horarioinicio, 
+                e.horariotermino, 
+                e.valoringresso, 
+                e.numparticipantes, 
+                e.status, 
+                e.idcliente,
+                c.nomecategoria AS categoria,
+                l.nome AS nome_local, 
+                l.endereco AS endereco_local, 
+                l.infradisp,
+                cl.nome AS nome_cliente,
+                i.idingresso,
+                i.confirmacao
+            FROM evento e
+            LEFT JOIN categoriaevento c ON e.idcategoriaevento = c.idcategoriaevento
+            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
+            LEFT JOIN cliente cl ON e.idcliente = cl.idcliente
+            LEFT JOIN ingresso i ON e.idevento = i.idevento AND i.idparticipante = $2
+            WHERE e.idevento = $1;
+        `;
+
+        const resultado = await db.query(query, [id, idparticipante || null]);
+        
+        if (resultado.rowCount === 0) {
+            return res.status(404).json({ erro: 'Evento não encontrado.' });
+        }
+
+        return res.status(200).json({
+            sucesso: true,
+            evento: resultado.rows[0]
+        });
+
+    } catch (e) {
+        console.error("Erro ao buscar detalhes do evento:", e);
+        return res.status(500).json({ erro: 'Erro interno ao buscar detalhes do evento.' });
+    }
+});
+
+// Rota para buscar categorias de eventos (para o select)
+router.get('/categorias/todas', async (req, res) => {
+    try {
+        const query = 'SELECT idcategoriaevento, nomecategoria FROM categoriaevento ORDER BY nomecategoria;';
+        const resultado = await db.query(query);
+        return res.status(200).json({ sucesso: true, categorias: resultado.rows });
+    } catch (e) {
+        console.error("Erro ao buscar categorias:", e);
+        return res.status(500).json({ erro: 'Erro interno ao buscar categorias.' });
+    }
+});
+
+// Rota para buscar localizações cadastradas (para o select)
+router.get('/localizacoes/todas', async (req, res) => {
+    try {
+        const query = 'SELECT idlocalizacao, nome, capmaxima FROM localizacao ORDER BY nome;';
+        const resultado = await db.query(query);
+        return res.status(200).json({ sucesso: true, localizacoes: resultado.rows });
+    } catch (e) {
+        console.error("Erro ao buscar localizações:", e);
+        return res.status(500).json({ erro: 'Erro interno ao buscar localizações.' });
+    }
+});
+
+// Rota para cadastrar o evento utilizando a stored function 'criaEvento'
+router.post('/criar', async (req, res) => {
+    const {
+        nomeEvento,
+        idCategoriaEvento,
+        dataInicio,
+        dataTermino,
+        horarioInicio,
+        horarioTermino,
+        valorIngresso,
+        numParticipantes,
+        idCliente,
+        idLocalizacao,
+        descricao
+    } = req.body;
+
+    try {
+        const query = `
+            SELECT criaEvento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) AS idevento;
+        `;
+        const values = [
+            nomeEvento,
+            idCategoriaEvento,
+            dataInicio,
+            dataTermino,
+            horarioInicio,
+            horarioTermino,
+            valorIngresso,
+            numParticipantes,
+            idCliente,
+            idLocalizacao,
+            descricao || ''
+        ];
+
+        const resultado = await db.query(query, values);
+        const idCriado = resultado.rows[0].idevento;
+
+        return res.status(201).json({
+            sucesso: true,
+            mensagem: 'Evento criado com sucesso (em status ORCAMENTO)!',
+            idevento: idCriado
+        });
+
+    } catch (e) {
+        console.error("Erro ao criar evento:", e);
+        // Captura o RAISE EXCEPTION disparado pela função do banco de dados
+        const mensagemErro = e.detail || e.message || 'Erro ao processar criação do evento.';
+        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+    }
+});
+
+// Rota para cancelar evento criado pelo ID do evento
+router.delete('/cancelar-evento/:idevento', async (req, res) => {
+    const { idevento } = req.params;
+
+    try {
+        // Executa a função do banco que retorna numeric
+        const query = 'SELECT cancelaEvento($1) AS resultado;';
+        const resultado = await db.query(query, [idevento]);
+        
+        // Se a query executou sem disparar exception no banco, o cancelamento ocorreu com sucesso
+        return res.status(200).json({ 
+            sucesso: true, 
+            mensagem: 'Evento cancelado com sucesso!' 
+        });
+
+    } catch (e) {
+        console.error("Erro ao cancelar evento:", e);
+        // Captura o RAISE EXCEPTION lançado pela stored function
+        const mensagemErro = e.detail || e.message || 'Não foi possível cancelar o evento.';
+        return res.status(400).json({ sucesso: false, erro: mensagemErro });
     }
 });
 

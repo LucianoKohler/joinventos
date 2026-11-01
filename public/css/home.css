@@ -105,3 +105,20 @@ aside {
 .confirmado     { background: var(--green); }
 .pendente       { background: var(--red); }
 .nao-cadastrado { background: var(--main); }
+
+#cria-evento {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: sticky;
+    bottom: 20px;
+    float: right;
+    align-self: flex-end; /* Impede que o botão estique na altura do flex */
+    flex-shrink: 0;        /* Impede que o botão seja esmagado */
+    background-color: var(--main) !important;
+    border-radius: 100px;
+    width: fit-content;
+    height: fit-content;
+}

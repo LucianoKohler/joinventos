@@ -21,15 +21,41 @@
             <i data-lucide="log-out" stroke-width="3px" color="white"></i>
         </button>
     </header>
-
+    
+    
     <!-- Código aqui-->
-    <main>CONTEÚDO AQUI</main>
+    <main class="flex gap-8">
+        <aside class="shadow-2xl">
+            <h1>SEUS EVENTOS</h1>
+            <div class="divider">
+                <hr>
+                <p>Eventos Futuros</p>
+            </div>
+            <div id="eventosFuturos"></div>
+            <div class="divider">
+                <hr>
+                <p>Eventos Passados</p>
+            </div>
+            <div id="eventosPassados"></div>
+        </aside>
+        <div class="mainDiv shadow-2xl">
+            
+            <h1>TODOS OS EVENTOS</h1>
+            <div class="flex flex-wrap gap-4 justify-center" id="mainContent"></div>
+            <button id="cria-evento" onclick="window.location.href='./criarEvento.html'">
+                <i data-lucide="cross" fill="white" stroke="white"></i>
+            </button>
+        </div>
 
+    </main>
+    
     <footer>
         <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
     </footer>
+
     <!-- Lucide CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>lucide.createIcons();</script>
+    <script src="js/homeCliente.js"></script>
 </body>
 </html>

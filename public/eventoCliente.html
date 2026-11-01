@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/evento.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./login.html'; localStorage.removeItem('token')" class="flex items-center gap-2 cursor-pointer">
+            <p class="text-white">LOGOUT</p>
+            <i data-lucide="log-out" stroke-width="3px" color="white"></i>
+        </button>
+    </header>
+
+    <!-- Código aqui-->
+    <main>
+        <div id="mainDiv" class="shadow-2xl">
+            <h1 id="nomeEvento"></h1>
+            <hr>
+            <span class="badge" id="categoriaEvento"></span>
+            <span class="badge" id="statusEvento"></span >
+            <i id="descricaoEvento"></i>
+            <hr>
+            <h2>HORÁRIO</h2>
+            <div class="horario">
+                <b>Início:</b> 
+                <p id="dataInicio"></p>
+                às
+                <p id="horarioInicio"></p>
+                <div class="break"></div>
+                <b>Término:</b> 
+                <p id="dataTermino"></p>
+                às
+                <p id="horarioTermino"></p>
+            </div>
+            <hr>
+            <h2>LOCALIZAÇÃO</h2>
+            <div class="localizacao">
+                <b id="nomeLocal"></b>
+                <b>Endereço:</b> <p id="enderecoLocal"></p>
+                <div class="break"></div>
+                <b>Infraestrutura:</b> <p id="infraLocal"></p>
+            </div>
+            <hr>
+            <h2>OUTRAS INFORMAÇÕES</h2>
+            <div class="outros">
+                <b>Preço do ingresso:</b> <p id="valorIngresso"></p>
+                <div class="break"></div>
+                <b>Organizadora:</b> <p id="nomeOrganizador"></p>
+            </div>
+        </div>
+        <aside class="shadow-2xl">
+            <div id="evento-passado">
+                <h1>ESTE EVENTO JÁ FOI CONCLUÍDO</h1>
+                <div class="buttons">
+                    <button onclick="gerarReloatorio()" class="relatorio">
+                        <i  data-lucide="receipt-text"></i>Relatório do Evento
+                    </button>
+                </div>
+            </div>
+            <div id="evento-futuro">
+                <h1>ESTE EVENTO AINDA NÃO FOI CONCLUÍDO</h1>
+                <div class="buttons">
+                    <button onclick="cancelarEvento()" class="cancelar">
+                        <i data-lucide="circle-x"></i>Cancelar evento
+                    </button>
+                </div>
+            </div>
+            <div id="nao-seu-evento">
+                <h1>ESTE EVENTO FOI FEITO POR OUTRA PESSOA</h1>
+                <div class="buttons">
+                    <button disabled class="relatorio">
+                        Relatório indisponível
+                    </button>
+                </div>
+            </div>
+            <div id="evento-cancelado">
+                <h1>ESTE EVENTO FOI CANCELADO</h1>
+                <div class="buttons">
+                    <button disabled class="relatorio">
+                        Relatório indisponível
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/eventoCliente.js"></script>
+</body>
+</html>
