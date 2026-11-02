@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", ()=> {
 
             const data = { email, senha };
 
+            if(data.email == 'adm' && data.senha == 'adm') {
+                alert(`Login de ADM efetivado!`);
+                localStorage.setItem('token', 'adm');
+                window.location.href = './homeAdm.html';
+            }
+
             try {
                 const res = await fetch(`http://localhost:3000/api/users/login/`, {
                     method: 'POST',

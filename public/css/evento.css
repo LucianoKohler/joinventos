@@ -48,19 +48,3 @@ b {
     justify-content: space-evenly;
     align-items: center;
 }
-
-button {   
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    border-radius: 5px;
-    color: white;
-    width: 200px;
-    padding: 10px 10px;
-    margin: 10px;
-}
-
-.cancelar {background: var(--red); }
-.confirmar {background: var(--green); }
-.cadastrar {background: var(--green); }
-.relatorio {background-color: var(--main);}

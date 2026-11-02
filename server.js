@@ -10,12 +10,14 @@ app.use(express.static('public'));
 // Incluindo rotas à parte
 const usersRoutes = require("./routes/users");
 const eventosRoutes = require('./routes/eventos');
+const localizacoesRoutes = require('./routes/localizacoes');
 
 
 
 // Definindo o caminho para as rotas
 app.use("/api/users", usersRoutes);
 app.use('/api/eventos', eventosRoutes);
+app.use('/api/localizacoes', localizacoesRoutes);
 
 
 

@@ -57,6 +57,17 @@ a {
     text-decoration: underline;
 }
 
+button:not(#adicionar) {   
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 5px;
+    color: white;
+    width: 200px;
+    padding: 10px 10px;
+    margin: 10px;
+}
+
 button[type=submit] {
     padding: 1rem 1.5rem;
     border-radius: .5rem;
@@ -81,3 +92,20 @@ input[disabled]{
     background-color: rgb(241, 241, 241);
     border: 1px solid gray;
 }
+
+.vermelho {background: var(--red); }
+.verde {background: var(--green); }
+.azul {background-color: var(--main);}
+
+h1 {
+    color: var(--main);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+hr {
+    border: 2px solid var(--main);    
+    border-radius: 5px;
+    margin: 5px;
+}
+
