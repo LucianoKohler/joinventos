@@ -1091,3 +1091,93 @@ begin
 end;
 $$
 language plpgsql;
+
+
+create or replace function ajustaOrcamentoEvento(idEvento_p integer, delta_p numeric) returns void as
+$$
+declare
+	v_idOrcamento integer;
+	v_valorAtual numeric(10,2);
+	v_valorNovo numeric(10,2);
+begin
+ 
+	-- nada a ajustar
+	if (idEvento_p is null or delta_p is null or delta_p = 0) then
+		return;
+	end if;
+ 
+	-- deleção de Evento em cascata (Evento -> ItemServico/Orcamento/Pagamento): o evento já
+	-- sumiu, então não há orçamento para ajustar (e não faz sentido bloquear a deleção).
+	if not exists(select 1 from Evento where idEvento = idEvento_p) then
+		return;
+	end if;
+ 
+	-- "for update" trava a linha do orçamento, duas alterações de itens ao mesmo tempo não se atropelam.
+	select idOrcamento, valorTotal into v_idOrcamento, v_valorAtual
+		from Orcamento where idEvento = idEvento_p for update;
+ 
+	-- evento ainda não tem orçamento, o ADM define o valor inicial depois, em criaOrcamento.
+	if not found then
+		return;
+	end if;
+ 
+	-- mesma regra de alteraOrcamento, após o primeiro pagamento, o orçamento é imutável.
+	if exists(select 1 from Pagamento where idEvento = idEvento_p) then
+		raise exception 'Já existem pagamentos atrelados ao evento de ID %! Por questões de contrato, o orçamento não pode ser alterado, logo o item serviço não pode ser inserido/alterado/removido.', idEvento_p;
+	end if;
+ 
+	v_valorNovo := v_valorAtual + delta_p;
+ 
+	if (v_valorNovo <= 0) then
+		raise exception 'Essa operação deixaria o orçamento do evento de ID % com valor não positivo (R$ %)! Ajuste o orçamento com alteraOrcamento antes de prosseguir.', idEvento_p, v_valorNovo;
+	end if;
+ 
+	update Orcamento set valorTotal = v_valorNovo where idOrcamento = v_idOrcamento;
+ 
+	raise notice 'Orçamento de ID % (evento %) atualizado automaticamente: R$ % -> R$ %.', v_idOrcamento, idEvento_p, v_valorAtual, v_valorNovo;
+ 
+end;
+$$
+language plpgsql;
+
+-- como o gatilho é AFTER, o valorTotal (coluna gerada) de new/old já está calculado.
+create or replace function atualizaOrcamentoPorItemServico() returns trigger as
+$$
+begin
+ 
+	if (TG_OP = 'INSERT') then
+		perform ajustaOrcamentoEvento(new.idEvento, new.valorTotal);
+ 
+	elsif (TG_OP = 'DELETE') then
+		perform ajustaOrcamentoEvento(old.idEvento, -old.valorTotal);
+ 
+	elsif (TG_OP = 'UPDATE') then
+		-- A princípio esse aqui tá certo, não sei se tem alguma condição que não seja isso
+		perform ajustaOrcamentoEvento(new.idEvento, new.valorTotal - old.valorTotal);
+	end if;
+ 
+	return null;
+end;
+$$
+language plpgsql;
+
+drop trigger if exists trg_orcamentoItemServico_insert on ItemServico;
+drop trigger if exists trg_orcamentoItemServico_update on ItemServico;
+drop trigger if exists trg_orcamentoItemServico_delete on ItemServico;
+
+create trigger trg_orcamentoItemServico_insert
+after insert on ItemServico
+for each row
+execute function atualizaOrcamentoPorItemServico();
+ 
+-- só dispara se mudou algo que afeta o valor (ou o evento). Mudar só o status do item, por exemplo, não mexe no orçamento.
+create trigger trg_orcamentoItemServico_update
+after update of quantContratada, valorAcordado on ItemServico
+for each row
+when (old.valorTotal is distinct from new.valorTotal or old.idEvento is distinct from new.idEvento)
+execute function atualizaOrcamentoPorItemServico();
+ 
+create trigger trg_orcamentoItemServico_delete
+after delete on ItemServico
+for each row
+execute function atualizaOrcamentoPorItemServico();

@@ -17,6 +17,7 @@
     border-radius: 10px;
     padding: 16px 16px 32px 16px;
     width: 320px;
+    height: 350px;
     position: relative;
     background: white;
 }
@@ -30,4 +31,8 @@
     position: absolute;
     bottom: 12px;
     right: 12px;
+}
+
+.inativo {
+        
 }

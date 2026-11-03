@@ -11,6 +11,7 @@ app.use(express.static('public'));
 const usersRoutes = require("./routes/users");
 const eventosRoutes = require('./routes/eventos');
 const localizacoesRoutes = require('./routes/localizacoes');
+const fornecedoresRoutes = require('./routes/fornecedores');
 
 
 
@@ -18,6 +19,7 @@ const localizacoesRoutes = require('./routes/localizacoes');
 app.use("/api/users", usersRoutes);
 app.use('/api/eventos', eventosRoutes);
 app.use('/api/localizacoes', localizacoesRoutes);
+app.use('/api/fornecedores', fornecedoresRoutes);
 
 
 

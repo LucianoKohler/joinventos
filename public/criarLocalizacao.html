@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./localizacoes.html'">
+            <p class="text-white">VOLTAR</p>
+            <i data-lucide="arrow-left" stroke-width="3px" color="white"></i>
+        </button>
+    </header>
+
+    <main>
+        <div id="login" class="rounded-lg shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+            <div class="logo flex items-center gap-2">
+                <h3 class="font-bold text-sky-500 text-2xl!">NOVA LOCALIZAÇÃO</h3>
+                <i data-lucide="map-pin-plus" color="#0ea5e9" width="40px" height="40px"></i>
+            </div>
+
+            <form id="formCriarLocalizacao" class="flex flex-col gap-2 w-full">
+                <div>
+                    <label for="nome">NOME DO LOCAL</label><br>
+                    <input type="text" name="nome" id="nome" required class="w-full"><br>
+                </div>
+
+                <div>
+                    <label for="endereco">ENDEREÇO</label><br>
+                    <input type="text" name="endereco" id="endereco" required class="w-full"><br>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label for="capMaxima">CAPACIDADE</label><br>
+                        <input type="number" min="1" name="capMaxima" id="capMaxima" required class="w-full"><br>
+                    </div>
+                    <div class="flex-1">
+                        <label for="valorLocacao">VALOR LOCAÇÃO (R$)</label><br>
+                        <input type="number" step="0.01" min="0" name="valorLocacao" id="valorLocacao" required class="w-full"><br>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="area">ÁREA TOTAL (M²)</label><br>
+                    <input type="number" name="area" id="area" class="w-full"><br>
+                </div>
+                <div>
+                    <label for="infraDisp">INFRAESTRUTURA DISPONÍVEL</label><br>
+                    <input type="text" name="infraDisp" id="infraDisp" placeholder="Ex: Projetor, Wi-Fi, Ar-condicionado" class="w-full"><br>
+                </div>
+
+                <button type="submit" class="mt-2 cursor-pointer">CADASTRAR LOCALIZAÇÃO</button>
+                <i><a href="./localizacoes.html">Voltar para localizações</a></i>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/criarLocalizacao.js"></script>
+</body>
+</html>
