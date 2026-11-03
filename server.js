@@ -12,6 +12,8 @@ const usersRoutes = require("./routes/users");
 const eventosRoutes = require('./routes/eventos');
 const localizacoesRoutes = require('./routes/localizacoes');
 const fornecedoresRoutes = require('./routes/fornecedores');
+const apresentadoresRoutes = require('./routes/apresentadores');
+const servicosRoutes = require('./routes/servicos');
 
 
 
@@ -20,8 +22,8 @@ app.use("/api/users", usersRoutes);
 app.use('/api/eventos', eventosRoutes);
 app.use('/api/localizacoes', localizacoesRoutes);
 app.use('/api/fornecedores', fornecedoresRoutes);
-
-
+app.use('/api/apresentadores', apresentadoresRoutes);
+app.use('/api/servicos', servicosRoutes);
 
 
 // Exemplo de get

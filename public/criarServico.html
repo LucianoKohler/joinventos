@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./servicos.html'">
+            <p class="text-white">VOLTAR</p>
+            <i data-lucide="arrow-left" stroke-width="3px" color="white"></i>
+        </button>
+    </header>
+
+    <main>
+        <div id="login" class="rounded-lg shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+            <div class="logo flex items-center gap-2">
+                <h3 class="font-bold text-sky-500 text-2xl!">NOVO SERVIÇO</h3>
+                <i data-lucide="briefcase" color="#0ea5e9" width="40px" height="40px"></i>
+            </div>
+
+            <form id="formCriarServico" class="flex flex-col gap-2 w-full">
+                <div>
+                    <label for="descricao">DESCRIÇÃO / NOME</label><br>
+                    <input type="text" name="descricao" id="descricao" placeholder="Ex: Fotografia" required class="w-full"><br>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label for="unidMedida">UNIDADE DE MEDIDA</label><br>
+                        <input type="text" name="unidMedida" id="unidMedida" placeholder="Ex: Unidade, Hora" required class="w-full"><br>
+                    </div>
+                    <div class="flex-1">
+                        <label for="valorUnit">VALOR UNITÁRIO (R$)</label><br>
+                        <input type="number" step="0.01" min="0" name="valorUnit" id="valorUnit" required class="w-full"><br>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="idCategoriaServico">CATEGORIA</label><br>
+                    <select name="idCategoriaServico" id="idCategoriaServico" required class="w-full">
+                        <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="1">FOTOGRAFIA</option>
+                        <option value="2">FILMAGEM</option>
+                        <option value="3">ANIMACAO</option>
+                        <option value="4">SEGURANCA</option>
+                        <option value="5">RECEPCIONISMO</option>
+                        <option value="6">BRINDE</option>
+                        <option value="7">OUTRO</option>
+                    </select><br>
+                </div>
+
+                <button type="submit" class="mt-2 cursor-pointer">CADASTRAR SERVIÇO</button>
+                <i><a href="./servicos.html">Voltar para serviços</a></i>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/criarServico.js"></script>
+</body>
+</html>

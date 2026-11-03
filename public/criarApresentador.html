@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+        <button onclick="window.location.href='./apresentador.html'">
+            <p class="text-white">VOLTAR</p>
+            <i data-lucide="arrow-left" stroke-width="3px" color="white"></i>
+        </button>
+    </header>
+
+    <main class="flex items-center">
+        <div id="login" class="rounded-lg shadow-lg flex flex-col p-8! items-center gap-2 w-md max-w-[90vw] m-auto">
+            <div class="logo flex items-center gap-2">
+                <h3 class="font-bold text-sky-500 text-2xl!">NOVO APRESENTADOR</h3>
+                <i data-lucide="user-check" color="#0ea5e9" width="40px" height="40px"></i>
+            </div>
+
+            <form id="formCriarApresentador" class="flex flex-col gap-2 w-full">
+                <div>
+                    <label for="nome">NOME DO APRESENTADOR</label><br>
+                    <input type="text" name="nome" id="nome" required class="w-full"><br>
+                </div>
+
+                <div>
+                    <label for="email">E-MAIL</label><br>
+                    <input type="email" name="email" id="email" required class="w-full"><br>
+                </div>
+
+                <div>
+                    <label for="telefone">TELEFONE</label><br>
+                    <input type="text" name="telefone" id="telefone" required class="w-full"><br>
+                </div>
+
+                <button type="submit" class="mt-2 cursor-pointer">CADASTRAR APRESENTADOR</button>
+                <i><a href="./apresentador.html">Voltar para apresentadores</a></i>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <!-- Lucide CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/criarApresentador.js"></script>
+</body>
+</html>
