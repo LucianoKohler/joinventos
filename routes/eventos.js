@@ -204,7 +204,7 @@ router.get('/localizacoes/todas', async (req, res) => {
     }
 });
 
-// Rota para cadastrar o evento utilizando a stored function 'criaEvento'
+// Rota para cadastrar o evento completo, serviços, cronograma e orçamento em transação (Tudo ou Nada)
 router.post('/criar', async (req, res) => {
     const {
         nomeEvento,
@@ -217,14 +217,26 @@ router.post('/criar', async (req, res) => {
         numParticipantes,
         idCliente,
         idLocalizacao,
-        descricao
+        descricao,
+        servicos,
+        cronograma,
+        orcamentoInicial
     } = req.body;
 
+    const client = await db.connect(); // Obtém cliente do pool para transação unificada
+
     try {
-        const query = `
+        await client.query('BEGIN');
+
+        // 1. Cria o Evento chamando a stored function oficial 'criaEvento'
+        // Assinatura esperada: 
+        // (nomeEvento_p varchar, idCategoriaEvento_p integer, dataInicio_p date, dataTermino_p date, 
+        //  horarioInicio_p time, horarioTermino_p time, valorIngresso_p numeric, numParticipantes_p integer, 
+        //  idCliente_p integer, idLocalizacao_p integer, descricao_p text)
+        const queryEvento = `
             SELECT criaEvento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) AS idevento;
         `;
-        const values = [
+        const valuesEvento = [
             nomeEvento,
             idCategoriaEvento,
             dataInicio,
@@ -238,18 +250,72 @@ router.post('/criar', async (req, res) => {
             descricao || ''
         ];
 
-        const resultado = await db.query(query, values);
-        const idCriado = resultado.rows[0].idevento;
+        const resultadoEvento = await client.query(queryEvento, valuesEvento);
+        const idCriado = resultadoEvento.rows[0].idevento;
+
+        // 2. Insere os Itens de Serviço usando a stored function oficial 'criaItemServico'
+        // Assinatura esperada: 
+        // (quantContratada_p numeric, valorAcordado_p numeric, idServico_p integer, idFornecedor_p integer, idEvento_p integer)
+        if (servicos && servicos.length > 0) {
+            for (const serv of servicos) {
+                const queryItem = `
+                    SELECT criaItemServico($1, $2, $3, $4, $5);
+                `;
+                await client.query(queryItem, [
+                    serv.quantContratada,
+                    serv.valorAcordado,
+                    serv.idServico,
+                    serv.idFornecedor, // Obrigatório conforme constraint NOT NULL da tabela ItemServico
+                    idCriado
+                ]);
+            }
+        }
+
+        // 3. Insere o Cronograma usando a stored function oficial 'criaCronograma'
+        if (cronograma && cronograma.length > 0) {
+            console.log("Processando cronograma para o evento:", idCriado, cronograma);
+            for (const cron of cronograma) {
+                const queryCron = `
+                    SELECT criaCronograma($1, $2, $3, $4, $5);
+                `;
+                await client.query(queryCron, [
+                    cron.duracaoMinutos,
+                    cron.dataInicio, 
+                    cron.valorCache,
+                    cron.idApresentador || null,
+                    idCriado
+                ]);
+            }
+        }
+
+        // 4. Cria o Orçamento Inicial usando a stored function oficial 'criaOrcamento'
+        if (orcamentoInicial !== undefined && orcamentoInicial !== null && orcamentoInicial !== '') {
+            const queryOrcamento = `
+                SELECT criaOrcamento($1, (current_date + interval '30 days')::date, $2, $3, $4, $5);
+            `;
+            const idFormaPagamentoPadrao = 1; // Certifique-se de que existe uma forma de pagamento com ID 1 no seu banco
+            await client.query(queryOrcamento, [
+                idFormaPagamentoPadrao,
+                orcamentoInicial,
+                idCriado,
+                'Orçamento inicial gerado automaticamente no cadastro.',
+                descricao || ''
+            ]);
+        }
+
+        await client.query('COMMIT');
+        client.release();
 
         return res.status(201).json({
             sucesso: true,
-            mensagem: 'Evento criado com sucesso (em status ORCAMENTO)!',
+            mensagem: 'Evento, serviços, cronograma e orçamento cadastrados com sucesso!',
             idevento: idCriado
         });
 
     } catch (e) {
-        console.error("Erro ao criar evento:", e);
-        // Captura o RAISE EXCEPTION disparado pela função do banco de dados
+        await client.query('ROLLBACK');
+        client.release();
+        console.error("Erro no cadastro completo do evento:", e);
         const mensagemErro = e.detail || e.message || 'Erro ao processar criação do evento.';
         return res.status(400).json({ sucesso: false, erro: mensagemErro });
     }

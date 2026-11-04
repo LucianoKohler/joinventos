@@ -48,3 +48,19 @@ b {
     justify-content: space-evenly;
     align-items: center;
 }
+
+#mainContent {
+    width: 50%;
+    min-width: 400px;
+    padding: 20px;
+    border-radius: 20px;
+    margin: 0 auto;
+}
+
+#indicador {
+    border: 1px solid var(--main);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: var(--main);
+}

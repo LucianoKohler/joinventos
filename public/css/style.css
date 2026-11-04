@@ -93,6 +93,12 @@ input[disabled]{
     border: 1px solid gray;
 }
 
+button {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
 .vermelho {background: var(--red); }
 .verde {background: var(--green); }
 .azul {background-color: var(--main);}
