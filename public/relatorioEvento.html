@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/evento.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Joinventos - Relatório do Evento</title>
+</head>
+<body>
+    <header>
+        <div class="flex items-center gap-2">
+            <h3>JOINVENTOS</h3>
+            <i data-lucide="wind" color="white" width="48px" height="48px"></i>
+        </div>
+    </header>
+
+    <main class="flex flex-col">
+        <div>
+            <div>
+                <h1>RELATÓRIO DO EVENTO</h1>
+            </div>
+            <div>
+                <span id="nomeEventoTitulo">Carregando evento...</span>
+            </div>
+            <div><hr></div>
+        </div>
+
+        <!-- Layout de Duas Divs Principais na mesma tela -->
+        <div id="relatorio-wrapper" class="flex gap-4">
+            
+            <!-- DIV 1: ASSINAR / PREENCHER EVENTO -->
+            <div class="content shadow-2xl grow-1">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1>Assinar Evento</h1>
+                        <i data-lucide="edit-3" color="var(--main)" width="22px" height="22px"></i>
+                    </div>
+                    <hr>
+
+                    <form id="formAssinarRelatorio">
+                        <input type="hidden" id="idRelatorio">
+
+                        <div>
+                            <label for="avaliacaoGeral">Avaliação Geral (0 a 10)</label><br>
+                            <input type="number" step="0.1" min="0" max="10" name="avaliacaoGeral" id="avaliacaoGeral" required placeholder="Ex: 9.5">
+                        </div>
+
+                        <div>
+                            <label for="observacoes">Observações Finais</label><br>
+                            <textarea name="observacoes" id="observacoes" rows="4" placeholder="Descreva como foi o evento, pontos fortes e melhorias..."></textarea>
+                        </div>
+
+                        <div>
+                            <label for="fotosInput">Adicionar Fotos do Evento</label><br>
+                            <input type="file" id="fotosInput" name="fotos" multiple accept="image/*">
+                        </div>
+                </div>
+
+                        <div>
+                            <button type="submit" id="btnSalvarAssinar">
+                                <i data-lucide="check-circle" width="18px" height="18px"></i> Assinar e Salvar Relatório
+                            </button>
+                        </div>
+                    </form>
+            </div>
+
+            <!-- DIV 2: INFORMAÇÕES E FOTOS DO EVENTO -->
+            <div class="content shadow-2xl grow-2">
+                <div class="flex items-center gap-2">
+                    <h1>Informações e Fotos do Evento</h1>
+                    <i data-lucide="image" color="var(--main)" width="22px" height="22px"></i>
+                </div>
+                <hr>
+
+                <div id="infoResumoRelatorio">
+                    <strong>Status Atual:</strong> <span id="statusRelatorioTexto">Carregando...</span>
+                    <br>
+                    <strong>Nota final do evento:</strong> <span id="nota"></span>
+                    <br>
+                    <strong>Fotos:</strong>
+
+                </div>
+
+                <div>
+                    <div id="galeriaFotos">
+                        <p id="semFotosMsg">Nenhuma foto cadastrada ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>JOINVENTOS BRASIL &#169 TODOS OS DIREITOS RESERVADOS</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+    <script src="js/relatorioEvento.js"></script>
+</body>
+</html>

@@ -64,3 +64,14 @@ b {
     font-weight: bold;
     color: var(--main);
 }
+
+.content {
+    padding: 20px !important;
+    border-radius: 10px;
+}
+
+.imagem {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+}

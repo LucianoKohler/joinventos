@@ -14,6 +14,7 @@ const localizacoesRoutes = require('./routes/localizacoes');
 const fornecedoresRoutes = require('./routes/fornecedores');
 const apresentadoresRoutes = require('./routes/apresentadores');
 const servicosRoutes = require('./routes/servicos');
+const relatoriosRoutes = require('./routes/relatorios');
 
 
 
@@ -24,6 +25,7 @@ app.use('/api/localizacoes', localizacoesRoutes);
 app.use('/api/fornecedores', fornecedoresRoutes);
 app.use('/api/apresentadores', apresentadoresRoutes);
 app.use('/api/servicos', servicosRoutes);
+app.use('/api/relatorios', relatoriosRoutes);
 
 
 // Exemplo de get

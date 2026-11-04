@@ -38,8 +38,8 @@ INSERT INTO Localizacao (valorLocacao, nome, endereco, capMaxima, area, infraDis
 -- Senha padrão para testes gerada com bcrypt (equivalente a "123456")
 -- $2b$10$X... (hash seguro de exemplo)
 INSERT INTO cliente (nome, senha, telefone, email, endereco, cpf_cnpj) VALUES 
-('Ana Souza Eventos', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '(47) 99111-2222', 'ana.cliente@email.com', 'Rua XV de Novembro, 200 - Centro', '12.345.678/0001-99'),
-('Carlos Eduardo Silva', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '(47) 99888-7766', 'carlos.cliente@email.com', 'Rua Visconde de Taunay, 550 - Bucarein', '98.765.432/0001-11');
+('Ana Souza Eventos', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '(47) 99111-2222', 'ana.cliente@email.com', 'Rua XV de Novembro, 200 - Centro', '12.345.678/0001-99'),
+('Carlos Eduardo Silva', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '(47) 99888-7766', 'carlos.cliente@email.com', 'Rua Visconde de Taunay, 550 - Bucarein', '98.765.432/0001-11');
 
 INSERT INTO Fornecedor (ativo, nome, cnpj, telefone, especialidade, email, avalDesempenho) VALUES 
 (true, 'Gastronomia & Sabor Ltda', '11.222.333/0001-44', '(47) 3433-1122', 'BUFFET', 'contato@gastronomiasabor.com', 9.5),
@@ -54,11 +54,12 @@ INSERT INTO participante (nome, senha, telefone, email) VALUES
 ('Mariana Lima', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '(47) 97711-3344', 'mariana.participante@email.com'),
 ('Lucas Gabriel Rocha', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '(47) 96655-2233', 'lucas.participante@email.com'),
 ('Beatriz Costa', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '(47) 95544-1122', 'beatriz.participante@email.com'),
-('participante', '$2b$10$1r5LFEVSm5HjltLot.VECOG5rxVfvapnMrv2mexim53sSWEow6Iii', '(47) 95241-2971', 'participante@gmail.com');
+('teste', '$2b$10$1r5LFEVSm5HjltLot.VECOG5rxVfvapnMrv2mexim53sSWEow6Iii', '(47) 95241-2971', 'teste@gmail.com');
 
 INSERT INTO Evento (nomeEvento, idCategoriaEvento, dataInicio, dataTermino, horarioInicio, horarioTermino, valorIngresso, numParticipantes, status, idCliente, idLocalizacao, descricao) VALUES 
 ('Seminário de Tecnologia e Inovação 2026', 4, '2026-07-15', '2026-07-15', '08:00:00', '18:00:00', 150.00, 200, 'CONFIRMADO', 1, 2, 'Um dia inteiro de palestras focadas nas tendências de tecnologia para o mercado corporativo.'),
 ('Workshop de Desenvolvimento Web Moderno', 5, '2026-08-10', '2026-08-10', '13:30:00', '19:00:00', 80.00, 50, 'EM_PREPARACAO', 1, 1, 'Mão na massa com arquitetura de aplicações web eficientes e seguras.'),
+('Confraternização da Bórus Ltda', 7, '2026-9-20', '2026-9-20', '20:00:00', '03:00:00', 20.00, 100, 'CONFIRMADO', 2, 3, 'Pra fechar o bom andamento da empresa com chave de ouro!'),
 ('Confraternização Anual de Fim de Ano', 7, '2026-12-20', '2026-12-20', '20:00:00', '03:00:00', 200.00, 120, 'CONFIRMADO', 2, 3, 'Festa com buffet completo e música ao vivo para fechar o ano com chave de ouro.');
 
 INSERT INTO Servico (unidMedida, ativo, valorUnit, idCategoriaServico, descricao) VALUES 
@@ -89,5 +90,7 @@ INSERT INTO Ingresso (confirmacao, idEvento, idParticipante) VALUES
 (false, 2, 1), -- Mariana Pendente no workshop
 (true, 2, 3); 
 
-INSERT INTO Relatorio (numRealParticipantes, avaliacaoGeral, observacoes, idEvento) VALUES 
-(190, 9.4, 'Evento ocorreu dentro do horário previsto, alta satisfação do público com os palestrantes.', 1);
+INSERT INTO Relatorio (numRealParticipantes, observacoes, idEvento) VALUES 
+(190, 'Evento ocorreu dentro do horário previsto, alta satisfação do público com os palestrantes.', 4);
+
+-- UPDATE Evento SET idCliente = 3 WHERE idEvento IN (3, 4);
