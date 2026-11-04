@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (resposta.ok) {
             const evento = dados.evento;
 
-            // Preenchimento dos dados na tela
             document.getElementById("nomeEvento").innerText = evento.nome_evento;
             document.getElementById("categoriaEvento").innerText = evento.categoria || 'Geral';
             document.getElementById("descricaoEvento").innerText = evento.descricao || 'Nenhuma descrição informada.';
@@ -37,39 +36,32 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
 
-            // Elementos do <aside>
             const divPassado = document.getElementById("evento-passado");
             const divFuturo = document.getElementById("evento-futuro");
-            const divNaoSeu = document.getElementById("nao-seu-evento");
+            const divNaoAutor = document.getElementById("nao-seu-evento");
             const divCancelado = document.getElementById("evento-cancelado");
 
-            // Função auxiliar para ocultar todos
-            function ocultarTodasDivs() {
+            function ocultar() {
                 if (divPassado) divPassado.style.display = "none";
                 if (divFuturo) divFuturo.style.display = "none";
-                if (divNaoSeu) divNaoSeu.style.display = "none";
+                if (divNaoAutor) divNaoAutor.style.display = "none";
                 if (divCancelado) divCancelado.style.display = "none";
             }
 
-            ocultarTodasDivs();
+            ocultar();
 
-            // 1. Prioridade: Verificar se o evento foi cancelado
             const statusEvento = evento.status ? evento.status.toUpperCase() : '';
-            if (statusEvento === 'CANCELADO') {
+            if (statusEvento == 'CANCELADO') {
                 if (divCancelado) divCancelado.style.display = "flex";
                 return;
             }
 
-            // 2. Verificar se o evento pertence ao cliente logado
-            const idClienteLogado = Number(idCliente);
-            const idClienteDono = Number(evento.idcliente);
-            const ehMeuEvento = (idClienteDono === idClienteLogado);
+            const autor = (idCliente == evento.idcliente);
 
-            if (!ehMeuEvento) {
-                // Div 3: O evento foi criado por outro usuário
-                if (divNaoSeu) divNaoSeu.style.display = "flex";
+            if (!autor) {
+                if (divNaoAutor) divNaoAutor.style.display = "flex";
             } else {
-                // É meu evento, avaliamos se é passado ou futuro com base na data
+                // é autor, checa a data
                 const dataRaw = evento.datainicio;
                 const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 
@@ -82,11 +74,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const hoje = new Date();
                 hoje.setHours(0, 0, 0, 0);
 
-                if (dataEvento < hoje) {
-                    // Div 1: Evento concluído (passado) -> Exibe botão de relatório
+                if (dataEvento < hoje) { // Evento já passou
                     if (divPassado) divPassado.style.display = "flex";
-                } else {
-                    // Div 2: Evento futuro -> Exibe botão de cancelar evento
+                } else { // Evento ainda não passou
                     if (divFuturo) divFuturo.style.display = "flex";
                 }
             }
@@ -102,14 +92,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Função chamada pelo botão de relatório
-function gerarReloatorio() {
+
+function gerarRelatorio() {
     const params = new URLSearchParams(window.location.search);
     const idEvento = params.get('idevento');
     window.location.href = `./relatorioEvento.html?idevento=${idEvento}`;
 }
 
-// Função chamada pelo botão de cancelar evento criado (usando a stored function cancelaEvento)
 async function cancelarEvento() {
     const params = new URLSearchParams(window.location.search);
     const idEvento = params.get('idevento');
@@ -137,7 +126,7 @@ async function cancelarEvento() {
     }
 }
 
-// Função auxiliar para formatar a data do padrão do banco para o padrão brasileiro
+// Auxiliar
 function formatarData(dataStr) {
     if (!dataStr) return 'A definir';
     const dataPartes = dataStr.split('T')[0].split('-');

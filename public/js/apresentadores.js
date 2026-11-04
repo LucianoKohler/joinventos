@@ -28,17 +28,16 @@ async function carregarApresentadores() {
 
             mainContent.innerHTML = "";
 
-            apresentadores.forEach(apres => {
-                // Ajuste os campos conforme as colunas reais da sua tabela no banco (ex: nome, email, telefone)
+            apresentadores.forEach(apresentador => {
                 const bannerHTML = `
                     <div class="localizacao-banner shadow-xl flex flex-col justify-between p-4 bg-white rounded-lg border border-gray-100">
                         <div>
-                            <h3 class="font-bold text-lg mb-1" style="color: var(--main);">${apres.nome}</h3>
+                            <h3 class="font-bold text-lg mb-1" style="color: var(--main);">${apresentador.nome}</h3>
                             <hr class="mb-2">
-                            <p class="text-sm mb-1"><strong>E-mail:</strong> ${apres.email || 'Não informado'}</p>
-                            <p class="text-sm mb-6"><strong>Telefone:</strong> ${apres.telefone || 'Não informado'}</p>
+                            <p class="text-sm mb-1"><strong>E-mail:</strong> ${apresentador.email || 'Não informado'}</p>
+                            <p class="text-sm mb-6"><strong>Telefone:</strong> ${apresentador.telefone || 'Não informado'}</p>
                         </div>
-                        <button onclick="deletarApresentador(${apres.idapresentador})" class="btn-lixeira flex items-center justify-center" title="Excluir Apresentador">
+                        <button onclick="deletarapresentador(${apresentador.idapresentador})" class="btn-lixeira">
                             <i data-lucide="trash-2" width="18px" height="18px"></i>
                         </button>
                     </div>
@@ -46,20 +45,19 @@ async function carregarApresentadores() {
                 mainContent.innerHTML += bannerHTML;
             });
 
-            // Atualiza os ícones do Lucide nos novos cards injetados
             lucide.createIcons();
-
         } else {
             console.error("Erro na busca de apresentadores:", dados.erro);
-            mainContent.innerHTML = `<p class="sem-eventos text-red-500">Erro ao carregar apresentadores.</p>`;
+            mainContent.innerHTML = `<p>Erro ao carregar apresentadores.</p>`;
         }
     } catch (e) {
         console.error("Erro de conexão:", e);
-        mainContent.innerHTML = `<p class="sem-eventos text-red-500">Erro de conexão com o servidor.</p>`;
+        mainContent.innerHTML = `<p>Erro de conexão com o servidor.</p>`;
     }
 }
 
 async function deletarApresentador(idApresentador) {
+    // Confirmacao
     if (!confirm("Tem certeza de que deseja excluir este apresentador?")) return;
 
     try {

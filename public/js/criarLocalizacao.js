@@ -7,11 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const form = document.getElementById("formCriarLocalizacao");
+    const form = document.getElementById("form");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // Mapeia os dados do formulário para as variáveis da stored function
         const dadosLocal = {
             valorLocacao: parseFloat(document.getElementById("valorLocacao").value),
             nome: document.getElementById("nome").value,

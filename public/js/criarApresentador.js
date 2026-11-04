@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const form = document.getElementById("formCriarApresentador");
+    const form = document.getElementById("form");
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 

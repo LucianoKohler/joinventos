@@ -11,14 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const avalVal = document.getElementById("avalDesempenho").value;
+        const aval = document.getElementById("avalDesempenho").value;
 
         const dadosFornecedor = {
             nome: document.getElementById("nome").value,
             telefone: document.getElementById("telefone").value,
             cnpj: document.getElementById("cnpj").value,
             especialidade: document.getElementById("especialidade").value,
-            avalDesempenho: avalVal ? parseFloat(avalVal) : null,
+            avalDesempenho: aval ? parseFloat(aval) : null,
             email: document.getElementById("email").value
         };
 

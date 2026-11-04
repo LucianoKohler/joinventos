@@ -105,4 +105,5 @@ router.post('/login', async (req, res) => {
         return res.status(500).json({ erro: 'Erro interno do banco' });
     }
 });
-    module.exports = router;
+
+module.exports = router;

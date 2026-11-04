@@ -1,16 +1,15 @@
-let currentStep = 1;
-const totalSteps = 4;
+let passo = 1;
 
-let eventoState = {
+let dados = {
     dadosIniciais: {},
     servicos: [],
     cronograma: [],
     orcamentoInicial: null
 };
 
-let listaServicosCatalogo = [];
-let listaFornecedores = [];
-let listaApresentadores = [];
+let servicos = [];
+let fornecedores = [];
+let apresentadores = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const idCliente = localStorage.getItem('token');
@@ -21,12 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    await carregarDadosSelects();
-    configurarNavegacaoWizard();
+    await carregaDados();
+    configuraTela();
 });
 
-// Carrega Categorias do Banco (tabela categoriaevento), Localizações, Serviços, Fornecedores e Apresentadores
-async function carregarDadosSelects() {
+async function carregaDados() {
     try {
         const [resCat, resLoc, resServ, resForn, resApres] = await Promise.all([
             fetch('http://localhost:3000/api/eventos/categorias/todas').catch(() => ({ ok: false })),
@@ -36,7 +34,7 @@ async function carregarDadosSelects() {
             fetch('http://localhost:3000/api/apresentadores').catch(() => ({ ok: false }))
         ]);
 
-        // 1. Categorias (tabela categoriaevento)
+        // Categorias
         if (resCat.ok) {
             const dataCat = await resCat.json();
             const selectCat = document.getElementById("idCategoriaEvento");
@@ -48,7 +46,7 @@ async function carregarDadosSelects() {
             });
         }
 
-        // 2. Localizações
+        // Localizações
         if (resLoc.ok) {
             const dataLoc = await resLoc.json();
             const selectLoc = document.getElementById("idLocalizacao");
@@ -60,22 +58,22 @@ async function carregarDadosSelects() {
             });
         }
 
-        // 3. Serviços
+        // Serviços
         if (resServ.ok) {
             const dataServ = await resServ.json();
-            listaServicosCatalogo = dataServ.servicos || [];
+            servicos = dataServ.servicos || [];
         }
 
-        // 4. Fornecedores
+        // Fornecedores
         if (resForn.ok) {
-            const dataForn = await resForn.json();
-            listaFornecedores = (dataForn.fornecedores || []).filter(f => f.ativo !== false);
+            const dataForn = await resForn.json(); // Linha abaixo remove fornecedores inativos
+            fornecedores = (dataForn.fornecedores || []).filter(f => f.ativo !== false);
         }
 
-        // 5. Apresentadores
+        // Apresentadores
         if (resApres.ok) {
             const dataApres = await resApres.json();
-            listaApresentadores = dataApres.apresentadores || [];
+            apresentadores = dataApres.apresentadores || [];
         }
 
     } catch (e) {
@@ -83,32 +81,15 @@ async function carregarDadosSelects() {
     }
 }
 
-function configurarNavegacaoWizard() {
+function configuraTela() {
     const btnAvancar = document.getElementById("btnAvancar");
     const btnVoltar = document.getElementById("btnVoltar");
     const btnAddServico = document.getElementById("btnAddServico");
     const btnAddCronograma = document.getElementById("btnAddCronograma");
 
     btnAvancar.addEventListener("click", () => {
-        if (currentStep === 1) {
-            const inputsStep1 = document.querySelectorAll("#step-1 [required]");
-            let valido = true;
-
-            inputsStep1.forEach(input => {
-                if (!input.value) {
-                    valido = false;
-                    input.classList.add("border-red-500");
-                } else {
-                    input.classList.remove("border-red-500");
-                }
-            });
-
-            if (!valido) {
-                alert("Por favor, preencha todos os campos obrigatórios da Etapa 1.");
-                return;
-            }
-
-            eventoState.dadosIniciais = {
+        if (passo === 1) {
+            dados.dadosIniciais = {
                 nomeEvento: document.getElementById("nomeEvento").value,
                 idCategoriaEvento: parseInt(document.getElementById("idCategoriaEvento").value),
                 dataInicio: document.getElementById("dataInicio").value,
@@ -123,41 +104,41 @@ function configurarNavegacaoWizard() {
 
             mudarEtapa(2);
 
-        } else if (currentStep === 2) {
-            coletarServicosState();
+        } else if (passo === 2) {
+            coletaServicos();
             mudarEtapa(3);
 
-        } else if (currentStep === 3) {
-            coletarCronogramaState();
+        } else if (passo === 3) {
+            coletaCronograma();
             mudarEtapa(4);
 
-        } else if (currentStep === 4) {
+        } else if (passo === 4) {
             const valOrcamento = document.getElementById("orcamentoInicial").value;
-            eventoState.orcamentoInicial = valOrcamento ? parseFloat(valOrcamento) : null;
+            dados.orcamentoInicial = parseFloat(valOrcamento);
 
-            enviarEventoCompleto();
+            enviar();
         }
     });
 
     btnVoltar.addEventListener("click", () => {
-        if (currentStep > 1) {
-            mudarEtapa(currentStep - 1);
+        if (passo > 1) {
+            mudarEtapa(passo - 1);
         }
     });
 
     btnAddServico.addEventListener("click", () => {
-        adicionarLinhaServico();
+        adicionarServico();
     });
 
     btnAddCronograma.addEventListener("click", () => {
-        adicionarLinhaCronograma();
+        adicionaCronograma();
     });
 }
 
-function mudarEtapa(novaEtapa) {
-    document.getElementById(`step-${currentStep}`).classList.add("hidden");
-    currentStep = novaEtapa;
-    document.getElementById(`step-${currentStep}`).classList.remove("hidden");
+function mudarEtapa(v) {
+    document.getElementById(`passo-${passo}`).classList.add("hidden");
+    passo = v;
+    document.getElementById(`passo-${passo}`).classList.remove("hidden");
 
     const indicador = document.getElementById("indicador");
     const btnAvancar = document.getElementById("btnAvancar");
@@ -170,15 +151,15 @@ function mudarEtapa(novaEtapa) {
         4: "Etapa 4 de 4: Orçamento Inicial"
     };
 
-    indicador.textContent = titulosEtapas[currentStep];
-    btnVoltar.classList.toggle("hidden", currentStep === 1);
-    btnAvancar.textContent = currentStep === 4 ? "Concluir Cadastro" : "Avançar →";
+    indicador.textContent = titulosEtapas[passo];
+    btnVoltar.classList.toggle("hidden", passo === 1);
+    btnAvancar.textContent = passo === 4 ? "Concluir Cadastro" : "Avançar →";
 
     lucide.createIcons();
 }
 
 // Adiciona linha de serviço (itemServiço)
-function adicionarLinhaServico() {
+function adicionarServico() {
     const container = document.getElementById("servicosContainer");
     const msgVazia = document.getElementById("semServicosMsg");
     if (msgVazia) msgVazia.remove();
@@ -189,12 +170,12 @@ function adicionarLinhaServico() {
     linhaDiv.id = rowId;
 
     let optionsServicos = '<option value="">Selecione o serviço...</option>';
-    listaServicosCatalogo.forEach(s => {
+    servicos.forEach(s => {
         optionsServicos += `<option value="${s.idservico}">${s.descricao} (${s.unidmedida} - R$ ${s.valorunit})</option>`;
     });
 
     let optionsFornecedores = '<option value="">Nenhum (Serviço da Casa)</option>';
-    listaFornecedores.forEach(f => {
+    fornecedores.forEach(f => {
         optionsFornecedores += `<option value="${f.idfornecedor}">${f.nome}</option>`;
     });
 
@@ -228,8 +209,8 @@ function adicionarLinhaServico() {
     lucide.createIcons();
 }
 
-function coletarServicosState() {
-    eventoState.servicos = [];
+function coletaServicos() {
+    dados.servicos = [];
     const linhas = document.querySelectorAll("#servicosContainer > div");
 
     linhas.forEach(linha => {
@@ -239,7 +220,7 @@ function coletarServicosState() {
         const inputValor = linha.querySelector(".input-valor");
 
         if (selServico && selServico.value && inputQuant && inputValor) {
-            eventoState.servicos.push({
+            dados.servicos.push({
                 idServico: parseInt(selServico.value),
                 idFornecedor: selFornecedor.value ? parseInt(selFornecedor.value) : null,
                 quantContratada: parseFloat(inputQuant.value),
@@ -249,19 +230,19 @@ function coletarServicosState() {
     });
 }
 
-// Adiciona linha de cronograma estilizada com o seu padrão
-function adicionarLinhaCronograma() {
+function adicionaCronograma() {
     const container = document.getElementById("cronogramaContainer");
     const msgVazia = document.getElementById("semCronogramaMsg");
     if (msgVazia) msgVazia.remove();
 
-    const rowId = 'cron-row-' + Date.now() + Math.random().toString(36).substr(2, 5);
+    let contador = 0;
+    const rowId = `cron-row-${++contador}`;
     const linhaDiv = document.createElement("div");
     linhaDiv.className = "flex flex-wrap px-2! gap-2 rounded-lg border border-sky-600 h-min p-2 items-center";
     linhaDiv.id = rowId;
 
     let optionsApresentador = '<option value="">Sem apresentador</option>';
-    listaApresentadores.forEach(a => {
+    apresentadores.forEach(a => {
         optionsApresentador += `<option value="${a.idapresentador}">${a.nome}</option>`;
     });
 
@@ -293,8 +274,8 @@ function adicionarLinhaCronograma() {
     lucide.createIcons();
 }
 
-function coletarCronogramaState() {
-    eventoState.cronograma = [];
+function coletaCronograma() {
+    dados.cronograma = [];
     const linhas = document.querySelectorAll("#cronogramaContainer > div");
 
     linhas.forEach(linha => {
@@ -303,41 +284,38 @@ function coletarCronogramaState() {
         const inputCache = linha.querySelector(".input-cache");
         const selectApresentador = linha.querySelector(".select-apresentador");
 
+        // Formata a data
         if (inputDataInicio && inputDataInicio.value && inputDuracao && inputCache) {
-            // Substitui o 'T' por espaço e garante os segundos ":00" exigidos pelo timestamp(0)
             let dataValor = inputDataInicio.value.replace('T', ' ');
             if (dataValor.length === 16) { 
                 dataValor += ':00';
             }
 
-            eventoState.cronograma.push({
+            dados.cronograma.push({
                 dataInicio: dataValor,
                 duracaoMinutos: parseInt(inputDuracao.value),
                 valorCache: parseFloat(inputCache.value),
-                idApresentador: selectApresentador.value ? parseInt(selectApresentador.value) : null
+                idApresentador: parseInt(selectApresentador.value)
             });
         }
     });
-
-    console.log("Cronograma coletado no Front-end:", eventoState.cronograma);
 }
 
-// Envio final unificado (Tudo ou Nada)
-async function enviarEventoCompleto() {
+async function enviar() {
     try {
         const idCliente = localStorage.getItem('token');
-        const payloadFinal = {
+        const dadosFinais = {
             idCliente: parseInt(idCliente),
-            ...eventoState.dadosIniciais,
-            servicos: eventoState.servicos,
-            cronograma: eventoState.cronograma,
-            orcamentoInicial: eventoState.orcamentoInicial
+            ...dados.dadosIniciais, // Separa os caras
+            servicos: dados.servicos,
+            cronograma: dados.cronograma,
+            orcamentoInicial: dados.orcamentoInicial
         };
 
         const resposta = await fetch('http://localhost:3000/api/eventos/criar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payloadFinal)
+            body: JSON.stringify(dadosFinais)
         });
 
         const resultado = await resposta.json();

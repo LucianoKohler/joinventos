@@ -1,37 +1,35 @@
-
-const radioParticipante = document.getElementById("participante");
-const radioCliente = document.getElementById("cliente");
-const endereco = document.getElementById("endereco");
-const cpf = document.getElementById("cpf");
-
-if(radioParticipante.checked){
-    endereco.disabled = true;
-    cpf.disabled = true;
-}
-
-radioParticipante.addEventListener("click", () => {
-    endereco.disabled = true;
-    cpf.disabled = true;
-});
-
-radioCliente.addEventListener("click", () => {
-    endereco.disabled = false;
-    cpf.disabled = false;
-});
-
-// ROTAS
-
 document.addEventListener("DOMContentLoaded", ()=> {
     const formCadastro = document.getElementById("formCadastro");
+    const radioParticipante = document.getElementById("participante");
+    const radioCliente = document.getElementById("cliente");
+    const endereco = document.getElementById("endereco");
+    const cpf = document.getElementById("cpf");
+
+    if(radioParticipante.checked){
+        endereco.disabled = true;
+        cpf.disabled = true;
+    }
+
+    radioParticipante.addEventListener("click", () => {
+        endereco.disabled = true;
+        cpf.disabled = true;
+    });
+
+    radioCliente.addEventListener("click", () => {
+        endereco.disabled = false;
+        cpf.disabled = false;
+    });
+
 
     if(formCadastro){
         formCadastro.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Não recarrega a página
+            e.preventDefault();
 
             const nome = document.getElementById("nome").value;
             const senha = document.getElementById("senha").value;
-            const email = document.getElementById("email").value;
             const telefone = document.getElementById("telefone").value;
+            const email = document.getElementById("email").value;
+            const endereco = document.getElementById("endereco").value;
             const cpf_cnpj = document.getElementById("cpf").value;
 
             let dadosUsuario;
@@ -39,8 +37,9 @@ document.addEventListener("DOMContentLoaded", ()=> {
                 dadosUsuario = {
                     nome: nome,
                     senha: senha,
-                    email: email,
                     telefone: telefone,
+                    email: email,
+                    endereco: endereco,
                     cpf_cnpj: cpf_cnpj
                 }
             }else{
