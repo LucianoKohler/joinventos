@@ -954,7 +954,7 @@ $$
 language plpgsql;
 
 
-create or replace function desativaFornecedor(idFornecedor_p integer) returns void as
+create or replace function inativaFornecedor(idFornecedor_p integer) returns void as
 $$
 declare
 begin
@@ -972,6 +972,23 @@ begin
 	update Fornecedor set ativo = false where idFornecedor = idFornecedor_p;
 
 	raise notice 'Fornecedor de ID % desativado com sucesso!', idFornecedor_p;
+	
+end;
+$$
+language plpgsql;
+
+create or replace function reativaFornecedor(idFornecedor_p integer) returns void as
+$$
+declare
+begin
+
+	if not exists(select 1 from Fornecedor where idFornecedor = idFornecedor_p and !ativo) then
+		raise exception 'Fornecedor de ID % não consta no sistema ou não está desativado! Ativação cancelada.', idFornecedor_p;
+	end if;
+
+	update Fornecedor set ativo = true where idFornecedor = idFornecedor_p;
+
+	raise notice 'Fornecedor de ID % ativado com sucesso!', idFornecedor_p;
 	
 end;
 $$

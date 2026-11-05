@@ -48,6 +48,34 @@ router.get('/inscritos/:idparticipante', async (req, res) => {
     }
 });
 
+router.get('/todos', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                e.idevento, 
+                e.nomeevento AS nome_evento, 
+                e.descricao, 
+                e.datainicio AS data_evento, 
+                l.nome AS local,
+                e.status
+            FROM evento e
+            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
+            ORDER BY e.datainicio;
+        `;
+
+        const resultado = await db.query(query);
+
+        return res.status(200).json({
+            sucesso: true,
+            eventos: resultado.rows
+        });
+
+    } catch (e) {
+        console.error("Erro ao buscar todos os eventos:", e);
+        return res.status(500).json({ erro: 'Erro interno ao buscar eventos.' });
+    }
+});
+
 router.get('/todos/:idparticipante', async (req, res) => {
     const { idparticipante } = req.params;
 
@@ -324,6 +352,27 @@ router.delete('/cancelar-evento/:idevento', async (req, res) => {
         console.error("Erro ao cancelar evento:", e);
         const mensagemErro = e.message || 'Não foi possível cancelar o evento.';
         return res.status(400).json({ sucesso: false, erro: mensagemErro });
+    }
+});
+
+router.post('/confirmar', async (req, res) => {
+    try {
+        const { idEvento } = req.body;
+
+        if (!idEvento) {
+            return res.status(400).json({ erro: 'ID do evento não fornecido.' });
+        }
+
+        await db.query('SELECT confirmaEvento($1)', [parseInt(idEvento)]);
+
+        res.json({ 
+            sucesso: true, 
+            mensagem: 'Evento confirmado com sucesso!' 
+        });
+    } catch (err) {
+        console.error("Erro ao confirmar evento:", err);
+        
+        res.status(400).json({ erro: err.message });
     }
 });
 

@@ -34,11 +34,11 @@ async function carregarFornecedores() {
                 const statusClasse = forn.ativo ? 'verde' : 'vermelho';
                 
                 const   botaoInativar = forn.ativo 
-                    ? `<button onclick="inativarFornecedor(${forn.idfornecedor})" class="btn-lixeira" title="Inativar Fornecedor">
+                    ? `<button onclick="inativarFornecedor(${forn.idfornecedor})" class="btn-lixeira">
                            <i data-lucide="user-x"></i> Inativar
                        </button>`
-                    : `<button disabled class="btn-lixeira" title="Inativar Fornecedor">
-                           <i data-lucide="user-x" ></i> Inativo
+                    : `<button onclick="reativarFornecedor(${forn.idfornecedor})" class="verde">
+                           <i data-lucide="user-check" ></i> Reativar
                        </button>`
 
                 const bannerHTML = `
@@ -80,8 +80,8 @@ async function inativarFornecedor(idFornecedor) {
     if (!confirm("Tem certeza de que deseja inativar este fornecedor?")) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/fornecedores/${idFornecedor}`, {
-            method: 'DELETE',
+        const res = await fetch(`http://localhost:3000/api/fornecedores/inativar/${idFornecedor}`, {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
 
@@ -89,6 +89,30 @@ async function inativarFornecedor(idFornecedor) {
         
         if (res.ok) {
             alert(resultado.mensagem || 'Fornecedor inativado com sucesso!');
+            window.location.reload();
+        } else {
+            alert(`Erro: ${resultado.erro || resultado.mensagem}`);
+        }
+
+    } catch (e) {
+        console.error("Erro de conexão:", e);
+        alert("Erro de conexão com o servidor.");
+    }
+}
+
+async function reativarFornecedor(idFornecedor) {
+    if (!confirm("Tem certeza de que deseja reativar este fornecedor?")) return;
+
+    try {
+        const res = await fetch(`http://localhost:3000/api/fornecedores/reativar/${idFornecedor}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const resultado = await res.json();
+        
+        if (res.ok) {
+            alert(resultado.mensagem || 'Fornecedor reativado com sucesso!');
             window.location.reload();
         } else {
             alert(`Erro: ${resultado.erro || resultado.mensagem}`);

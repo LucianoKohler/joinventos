@@ -42,11 +42,11 @@ router.post('/criar', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.post('/inativar/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const query = 'SELECT desativaFornecedor($1);';
+        const query = 'SELECT inativaFornecedor($1);';
         await db.query(query, [id]);
 
         return res.status(200).json({ 
@@ -57,6 +57,24 @@ router.delete('/:id', async (req, res) => {
     } catch (e) {
         console.error("Erro ao inativar fornecedor:", e);
         return res.status(400).json({ sucesso: false, erro: e.message || 'Não foi possível inativar o fornecedor.' });
+    }
+});
+
+router.post('/reativar/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const query = 'SELECT reativaFornecedor($1);';
+        await db.query(query, [id]);
+
+        return res.status(200).json({ 
+            sucesso: true, 
+            mensagem: 'Fornecedor reativado com sucesso!' 
+        });
+
+    } catch (e) {
+        console.error("Erro ao reativar fornecedor:", e);
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Não foi possível reativar o fornecedor.' });
     }
 });
 
