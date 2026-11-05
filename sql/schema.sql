@@ -425,7 +425,7 @@ language plpgsql;
 
 ------------------------------------------------------------------
 
-create or replace function criaCliente(nome_p varchar, telefone_p varchar, endereco_p varchar, cpf_cnpj_p varchar, email_p varchar default '') returns integer as
+create or replace function criaCliente(nome_p varchar, senha_p varchar, telefone_p varchar, email_p varchar, endereco_p varchar, cpf_cnpj_p varchar default '') returns integer as
 $$
 declare
 	v_idCliente integer;
@@ -447,11 +447,11 @@ begin
 		raise exception 'Já existe um cliente com esse CPF/CNPJ! Cliente não foi criado.';
 	end if;
 
-	insert into Cliente(nome, telefone, email, endereco, cpf_cnpj)
-		values (nome_p, telefone_p, email_p, endereco_p, cpf_cnpj_p) returning idCliente into v_idCliente;
+	insert into Cliente(nome, senha, telefone, email, endereco, cpf_cnpj)
+		values (nome_p, senha_p, telefone_p, email_p, endereco_p, cpf_cnpj_p) returning idCliente into v_idCliente;
 
 	raise notice 'Cliente com ID % criado com sucesso.', v_idCliente;
-	
+
 	return v_idCliente;
 	
 end;
@@ -702,13 +702,13 @@ language plpgsql;
 
 --------------------------------------------------------
 
-create or replace function criaParticipante(nome_p varchar, telefone_p varchar, email_p varchar default '') returns integer as
+create or replace function criaParticipante(nome_p varchar, senha_p varchar, telefone_p varchar, email_p varchar default '') returns integer as
 $$
 declare
 	v_idParticipante integer;
 begin
 
-	insert into Participante(nome, telefone, email) values (nome_p, telefone_p, email_p)
+	insert into Participante(nome, senha, telefone, email) values (nome_p, senha_p, telefone_p, email_p)
 		returning idParticipante into v_idParticipante;
 
 	raise notice 'Participante com ID % criado com sucesso!', v_idParticipante;

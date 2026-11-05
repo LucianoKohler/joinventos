@@ -11,10 +11,7 @@ router.post('/cadastro/cliente', async (req, res) => {
 
     try {
         const out = await db.query(
-            `INSERT INTO cliente (nome, senha, 
-            telefone, email, endereco, cpf_cnpj)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *;`, 
+            `SELECT criaCliente($1, $2, $3, $4, $5, $6)`, 
             [nome, senhaCript, telefone, email, endereco, cpf_cnpj]);
             res.status(201).json({ 
                 mensagem: 'Cliente cadastrado com sucesso!', 
