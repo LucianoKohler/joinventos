@@ -1,10 +1,9 @@
-// ROTAS
 document.addEventListener("DOMContentLoaded", ()=> {
     const formLogin = document.getElementById("formLogin");
 
     if(formLogin){
         formLogin.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Não recarrega a página
+            e.preventDefault(); 
 
             const email = document.getElementById("email").value;
             const senha = document.getElementById("senha").value;

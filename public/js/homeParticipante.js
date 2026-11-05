@@ -8,18 +8,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await Promise.all([
-        carregarMeusEventos(idParticipante),
-        carregarTodosEventos(idParticipante)
+        carregaMeusEventos(idParticipante),
+        carregaTodosEventos(idParticipante)
     ]);
 });
 
-// QUERY 1: apenas eventos inscritos
-
-async function carregarMeusEventos(idParticipante) {
-    const containerFuturos = document.getElementById("eventosFuturos");
-    const containerPassados = document.getElementById("eventosPassados");
-
-    if (!containerFuturos || !containerPassados) return;
+async function carregaMeusEventos(idParticipante) {
+    const futuros = document.getElementById("eventosFuturos");
+    const passados = document.getElementById("eventosPassados");
 
     try {
         const resposta = await fetch(`http://localhost:3000/api/eventos/inscritos/${idParticipante}`);
@@ -28,12 +24,12 @@ async function carregarMeusEventos(idParticipante) {
         if (resposta.ok) {
             const eventos = dados.eventos;
 
-            containerFuturos.innerHTML = "";
-            containerPassados.innerHTML = "";
+            futuros.innerHTML = "";
+            passados.innerHTML = "";
 
             if (!eventos || eventos.length === 0) {
-                containerFuturos.innerHTML = `<p class="sem-eventos">Você ainda não está inscrito em nenhum evento.</p>`;
-                containerPassados.innerHTML = `<p class="sem-eventos">Nenhum evento no histórico.</p>`;
+                futuros.innerHTML = `<p class="sem-eventos">Você ainda não está inscrito em nenhum evento.</p>`;
+                passados.innerHTML = `<p class="sem-eventos">Nenhum evento no histórico.</p>`;
                 return;
             }
 
@@ -44,7 +40,7 @@ async function carregarMeusEventos(idParticipante) {
             hoje.setHours(0, 0, 0, 0);
 
             eventos.forEach(evento => {
-                const dataRaw = evento.data_evento || evento.datainicio;
+                const dataRaw = evento.datainicio;
                 const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 
                 let dataFormatada = 'Data a definir';
@@ -65,33 +61,33 @@ async function carregarMeusEventos(idParticipante) {
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
-                        <div class="card-header">
+                        <div>
                             <h3>${evento.nome_evento}</h3>
                             <hr>
                             ${statusBadge}
                             <span class="badge data">${dataFormatada}</span>
                         </div>
-                        <div class="card-body">
+                        <div>
                             <p><i>${evento.descricao || 'Sem descrição'}</i></p>
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
-                        <div class="card-footer">
+                        <div>
                             <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
                 `;
 
                 if (dataEvento >= hoje) {
-                    containerFuturos.innerHTML += cardHTML;
+                    futuros.innerHTML += cardHTML;
                     temFuturos = true;
                 } else {
-                    containerPassados.innerHTML += cardHTML;
+                    passados.innerHTML += cardHTML;
                     temPassados = true;
                 }
             });
 
-            if (!temFuturos) containerFuturos.innerHTML = `<p class="sem-eventos">Você não tem próximos eventos agendados.</p>`;
-            if (!temPassados) containerPassados.innerHTML = `<p class="sem-eventos">Você não possui histórico de eventos passados.</p>`;
+            if (!temFuturos) futuros.innerHTML = `<p class="sem-eventos">Você não tem próximos eventos agendados.</p>`;
+            if (!temPassados) passados.innerHTML = `<p class="sem-eventos">Você não possui histórico de eventos passados.</p>`;
 
         } else {
             console.error("Erro na busca de inscritos:", dados.erro);
@@ -102,7 +98,7 @@ async function carregarMeusEventos(idParticipante) {
 }
 
 // QUERY 2: todos os eventos 
-async function carregarTodosEventos(idParticipante) {
+async function carregaTodosEventos(idParticipante) {
     const mainContent = document.getElementById("mainContent");
     if (!mainContent) return;
 
@@ -142,17 +138,17 @@ async function carregarTodosEventos(idParticipante) {
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
-                        <div class="card-header">
+                        <div>
                             <h3>${evento.nome_evento}</h3>
                             <hr>
                             ${statusBadge}
                             <span class="badge data">${dataFormatada}</span>
                         </div>
-                        <div class="card-body">
+                        <div>
                             <p><i>${evento.descricao || 'Sem descrição'}</i></p>
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
-                        <div class="card-footer">
+                        <div>
                             <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>

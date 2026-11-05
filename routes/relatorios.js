@@ -4,7 +4,6 @@ const pool = require('../db');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 1. Buscar ou criar o relatório do evento
 router.get('/evento/:idEvento', async (req, res) => {
     const { idEvento } = req.params;
     try {
@@ -33,14 +32,12 @@ router.post('/assinar', upload.array('fotos'), async (req, res) => {
         await client.query('BEGIN');
         const { idRelatorio, avaliacaoGeral, observacoes } = req.body;
 
-        // Chama diretamente a função do banco. Se já estiver assinado, o PL/pgSQL vai barrar com um erro.
         await client.query('SELECT assinaRelatorio($1, $2, $3)', [
             parseInt(idRelatorio),
             parseFloat(avaliacaoGeral),
             observacoes || ''
         ]);
 
-        // Insere as fotos enviadas na tabela Foto (tipo bytea) caso a assinatura seja aceita
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
                 await client.query(
@@ -52,16 +49,13 @@ router.post('/assinar', upload.array('fotos'), async (req, res) => {
 
         await client.query('COMMIT');
         res.json({ sucesso: true, mensagem: 'Relatório assinado e fotos salvas com sucesso!' });
-    } catch (err) {
+    } catch (e) {
         await client.query('ROLLBACK');
-        console.error("Erro ao assinar relatório:", err);
-        
-        // Repassa exatamente a mensagem de erro gerada pela sua stored function (ex: "Relatório já assinado!...")
-        res.status(400).json({ erro: err.message });
+        console.error("Erro ao assinar relatório:", e);
+        res.status(400).json({ erro: e.message });
     }
 });
 
-// 3. Rota para exibir/carregar a imagem binária (bytea)
 router.get('/foto/:idFoto', async (req, res) => {
     try {
         const { idFoto } = req.params;
@@ -73,8 +67,8 @@ router.get('/foto/:idFoto', async (req, res) => {
 
         res.setHeader('Content-Type', 'image/jpeg');
         res.send(result.rows[0].imagem);
-    } catch (err) {
-        console.error("Erro ao carregar foto:", err);
+    } catch (e) {
+        console.error("Erro ao carregar foto:", e);
         res.status(500).send('Erro ao carregar imagem.');
     }
 });

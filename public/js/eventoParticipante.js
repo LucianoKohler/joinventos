@@ -1,4 +1,4 @@
-let idIngressoAtual = null;
+let temIngresso = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
@@ -12,20 +12,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const url = idParticipante 
-            ? `http://localhost:3000/api/eventos/${idEvento}?idparticipante=${idParticipante}`
-            : `http://localhost:3000/api/eventos/${idEvento}`;
+        const url = `http://localhost:3000/api/eventos/${idEvento}?idparticipante=${idParticipante}`;
 
         const resposta = await fetch(url);
         const dados = await resposta.json();
 
         if (resposta.ok) {
             const evento = dados.evento;
+            temIngresso = evento.idingresso || null; // Null se não tem ou o valor do id do ingresso se tem
 
-            // **Guarda o idingresso retornado pelo banco (se o usuário estiver inscrito)**
-            idIngressoAtual = evento.idingresso || null;
-
-            // Preenchimento dos dados na tela
             document.getElementById("nomeEvento").innerText = evento.nome_evento;
             document.getElementById("categoriaEvento").innerText = evento.categoria || 'Geral';
             document.getElementById("descricaoEvento").innerText = evento.descricao || 'Nenhuma descrição informada.';
@@ -40,22 +35,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
 
-            // Controle visual das divs (cadastrado / nao-cadastrado)
             const divCadastrado = document.getElementById("cadastrado");
             const divNaoCadastrado = document.getElementById("nao-cadastrado");
             const btnConfirmar = document.getElementById("confirmar");
             const btnCancelar = document.getElementById("cancelar");
 
-            const estaCadastrado = Boolean(idIngressoAtual);
-            const estaConfirmado = evento.confirmacao === true;
-            console.log(estaConfirmado)
+            const estaCadastrado = Boolean(temIngresso);
+            const estaConfirmado = evento.confirmacao == true;
 
             if (estaCadastrado) {
                 if (divCadastrado) divCadastrado.style.display = "flex";
                 if (divNaoCadastrado) divNaoCadastrado.style.display = "none";
 
                 if (estaConfirmado && btnConfirmar) {
-
                     btnCancelar.style.display = "none";
                     btnConfirmar.disabled = true;
                     btnConfirmar.innerText = "Presença Confirmada";
@@ -102,13 +94,8 @@ async function entrarEvento(){
 }
 
 async function confirmarPresenca() {
-    if (!idIngressoAtual) {
-        alert("Ingresso não encontrado.");
-        return;
-    }
-
     try {
-        const res = await fetch(`http://localhost:3000/api/eventos/confirmar/${idIngressoAtual}`, {
+        const res = await fetch(`http://localhost:3000/api/eventos/confirmar/${temIngresso}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -129,15 +116,10 @@ async function confirmarPresenca() {
 }
 
 async function cancelarIngresso() {
-    if (!idIngressoAtual) {
-        alert("Ingresso não encontrado.");
-        return;
-    }
-
     if (!confirm("Tem certeza de que deseja cancelar sua inscrição neste evento?")) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/eventos/cancelar/${idIngressoAtual}`, {
+        const res = await fetch(`http://localhost:3000/api/eventos/cancelar/${temIngresso}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -157,7 +139,6 @@ async function cancelarIngresso() {
     }
 }
 
-// Função auxiliar para formatar a data do padrão do banco para o padrão brasileiro
 function formatarData(dataStr) {
     if (!dataStr) return 'A definir';
     const dataPartes = dataStr.split('T')[0].split('-');

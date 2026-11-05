@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Rota GET: /api/servicos (Com JOIN para trazer o nome da categoria)
 router.get('/', async (req, res) => {
     try {
         const query = `
@@ -20,7 +19,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Rota POST: /api/servicos/criar (Utilizando a Stored Function criaServico)
 router.post('/criar', async (req, res) => {
     const { unidMedida, valorUnit, idCategoriaServico, descricao } = req.body;
 
@@ -44,7 +42,6 @@ router.post('/criar', async (req, res) => {
     }
 });
 
-// Rota DELETE: /api/servicos/:id
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -63,8 +60,7 @@ router.delete('/:id', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao excluir serviço:", e);
-        const mensagemErro = e.detail || e.message || 'Não foi possível excluir o serviço.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Não foi possível excluir o serviço.' });
     }
 });
 

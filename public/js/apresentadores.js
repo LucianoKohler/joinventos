@@ -32,13 +32,13 @@ async function carregarApresentadores() {
                 const bannerHTML = `
                     <div class="localizacao-banner shadow-xl flex flex-col justify-between p-4 bg-white rounded-lg border border-gray-100">
                         <div>
-                            <h3 class="font-bold text-lg mb-1" style="color: var(--main);">${apresentador.nome}</h3>
-                            <hr class="mb-2">
-                            <p class="text-sm mb-1"><strong>E-mail:</strong> ${apresentador.email || 'Não informado'}</p>
-                            <p class="text-sm mb-6"><strong>Telefone:</strong> ${apresentador.telefone || 'Não informado'}</p>
+                            <h1>${apresentador.nome}</h1>
+                            <hr>
+                            <p><strong>E-mail:</strong> ${apresentador.email || 'Não informado'}</p>
+                            <p><strong>Telefone:</strong> ${apresentador.telefone || 'Não informado'}</p>
                         </div>
                         <button onclick="deletarapresentador(${apresentador.idapresentador})" class="btn-lixeira">
-                            <i data-lucide="trash-2" width="18px" height="18px"></i>
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </div>
                 `;

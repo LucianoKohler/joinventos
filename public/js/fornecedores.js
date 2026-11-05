@@ -30,32 +30,30 @@ async function carregarFornecedores() {
 
             fornecedores.forEach(forn => {
                 console.log(forn);
-                // Define a cor e o texto do status com base no boolean 'ativo'
                 const statusTexto = forn.ativo ? 'Ativo' : 'Inativo';
-                const statusClasse = forn.ativo ? 'text-green-600 font-bold' : 'text-red-600 font-bold';
+                const statusClasse = forn.ativo ? 'verde' : 'vermelho';
                 
-                // Se já estiver inativo, podemos desativar o botão ou mudar a ação
                 const   botaoInativar = forn.ativo 
                     ? `<button onclick="inativarFornecedor(${forn.idfornecedor})" class="btn-lixeira" title="Inativar Fornecedor">
-                           <i data-lucide="user-x" width="18px" height="18px"></i> Inativar
+                           <i data-lucide="user-x"></i> Inativar
                        </button>`
                     : `<button disabled class="btn-lixeira" title="Inativar Fornecedor">
-                           <i data-lucide="user-x" width="18px" height="18px"></i> Inativo
+                           <i data-lucide="user-x" ></i> Inativo
                        </button>`
 
                 const bannerHTML = `
                     <div class="localizacao-banner shadow-xl flex flex-col justify-between p-4 bg-white rounded-lg border border-gray-100">
                         <div>
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-bold text-lg" style="color: var(--main);">${forn.nome}</h3>
+                                <h1>${forn.nome}</h1>
                                 <span class="${statusClasse} text-xs px-1! py-0.5 rounded bg-gray-50 border">${statusTexto}</span>
                             </div>
-                            <hr class="mb-2">
-                            <p class="text-sm mb-1"><strong>CNPJ:</strong> ${forn.cnpj}</p>
-                            <p class="text-sm mb-1"><strong>Telefone:</strong> ${forn.telefone}</p>
-                            <p class="text-sm mb-1"><strong>E-mail:</strong> ${forn.email || 'Não informado'}</p>
-                            <p class="text-sm mb-1"><strong>Especialidade:</strong> ${forn.especialidade || 'Não informada'}</p>
-                            <p class="text-sm mb-4"><strong>Avaliação:</strong> ${forn.avaldesempenho !== null ? forn.avaldesempenho : 'N/A'}/10</p>
+                            <hr>
+                            <p><strong>CNPJ:</strong> ${forn.cnpj}</p>
+                            <p><strong>Telefone:</strong> ${forn.telefone}</p>
+                            <p><strong>E-mail:</strong> ${forn.email || 'Não informado'}</p>
+                            <p><strong>Especialidade:</strong> ${forn.especialidade || 'Não informada'}</p>
+                            <p><strong>Avaliação:</strong> ${forn.avaldesempenho !== null ? forn.avaldesempenho : 'N/A'}/10</p>
                         </div>
                         <div class="flex justify-end">
                             ${botaoInativar}
@@ -70,11 +68,11 @@ async function carregarFornecedores() {
 
         } else {
             console.error("Erro na busca de fornecedores:", dados.erro);
-            mainContent.innerHTML = `<p class="sem-eventos text-red-500">Erro ao carregar fornecedores.</p>`;
+            mainContent.innerHTML = `<p class="sem-eventos">Erro ao carregar fornecedores.</p>`;
         }
     } catch (e) {
         console.error("Erro de conexão:", e);
-        mainContent.innerHTML = `<p class="sem-eventos text-red-500">Erro de conexão com o servidor.</p>`;
+        mainContent.innerHTML = `<p class="sem-eventos">Erro de conexão com o servidor.</p>`;
     }
 }
 

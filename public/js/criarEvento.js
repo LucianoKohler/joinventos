@@ -266,7 +266,7 @@ function adicionaCronograma() {
             </select>
         </div>
         <button type="button" onclick="document.getElementById('${rowId}').remove()" class="vermelho p-2 mt-4 cursor-pointer flex items-center justify-center" title="Remover">
-            <i data-lucide="trash-2" width="18px" height="18px"></i>
+            <i data-lucide="trash-2"></i>
         </button>
     `;
 

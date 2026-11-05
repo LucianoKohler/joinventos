@@ -37,7 +37,7 @@ INSERT INTO Localizacao (valorLocacao, nome, endereco, capMaxima, area, infraDis
 
 -- Senha padrão para testes gerada com bcrypt (equivalente a "123456")
 -- $2b$10$X... (hash seguro de exemplo)
-INSERT INTO cliente (nome, senha, telefone, email, endereco, cpf_cnpj) VALUES 
+	INSERT INTO cliente (nome, senha, telefone, email, endereco, cpf_cnpj) VALUES 
 ('Ana Souza Eventos', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '(47) 99111-2222', 'ana.cliente@email.com', 'Rua XV de Novembro, 200 - Centro', '12.345.678/0001-99'),
 ('Carlos Eduardo Silva', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '(47) 99888-7766', 'carlos.cliente@email.com', 'Rua Visconde de Taunay, 550 - Bucarein', '98.765.432/0001-11');
 

@@ -32,21 +32,20 @@ async function carregarLocalizacoes() {
                 const bannerHTML = `
                     <div class="localizacao-banner shadow-xl flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-lg mb-1" style="color: var(--main);">${loc.nome}</h3>
-                            <hr class="mb-2">
-                            <p class="text-sm mb-1"><strong>Endereço:</strong> ${loc.endereco || 'Não informado'}</p>
-                            <p class="text-sm mb-1"><strong>Infraestrutura:</strong> ${loc.infradisp || 'Nenhuma'}</p>
-                            <p class="text-sm mb-8"><strong>Capacidade Máxima:</strong> ${loc.capmaxima} pessoas</p>
+                            <h1>${loc.nome}</h1>
+                            <hr>
+                            <p><strong>Endereço:</strong> ${loc.endereco || 'Não informado'}</p>
+                            <p><strong>Infraestrutura:</strong> ${loc.infradisp || 'Nenhuma'}</p>
+                            <p><strong>Capacidade Máxima:</strong> ${loc.capmaxima} pessoas</p>
                         </div>
                         <button onclick="deletarLocalizacao(${loc.idlocalizacao})" class="btn-lixeira flex items-center justify-center" title="Excluir Localização">
-                            <i data-lucide="trash-2" width="18px" height="18px"></i>
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </div>
                 `;
                 mainContent.innerHTML += bannerHTML;
             });
 
-            // Atualiza os ícones do Lucide nos novos elementos injetados
             lucide.createIcons();
 
         } else {

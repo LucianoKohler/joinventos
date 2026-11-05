@@ -31,16 +31,16 @@ async function carregarServicos() {
             servicos.forEach(serv => {
                 console.log(serv);
                 const bannerHTML = `
-                    <div class="localizacao-banner shadow-xl flex flex-col justify-between p-4 bg-white rounded-lg border border-gray-100">
+                    <div class="localizacao-banner">
                         <div>
-                            <h3 class="font-bold text-lg mb-1" style="color: var(--main);">${serv.descricao || 'Serviço sem descrição'}</h3>
-                            <hr class="mb-2">
-                            <p class="text-sm mb-1"><strong>Unidade de Medida:</strong> ${serv.unidmedida}</p>
-                            <p class="text-sm mb-1"><strong>Valor Unitário:</strong> R$ ${Number(serv.valorunit).toFixed(2)}</p>
-                            <p class="text-sm mb-6"><strong>Categoria:</strong> ${serv.nomecategoriaservico || 'Não informado'}</p>
+                            <h1>${serv.descricao || 'Serviço sem descrição'}</h1>
+                            <hr>
+                            <p><strong>Unidade de Medida:</strong> ${serv.unidmedida}</p>
+                            <p><strong>Valor Unitário:</strong> R$ ${Number(serv.valorunit).toFixed(2)}</p>
+                            <p><strong>Categoria:</strong> ${serv.nomecategoriaservico || 'Não informado'}</p>
                         </div>
-                        <button onclick="deletarServico(${serv.idservico})" class="btn-lixeira flex items-center justify-center" title="Excluir Serviço">
-                            <i data-lucide="trash-2" width="18px" height="18px"></i>
+                        <button onclick="deletarServico(${serv.idservico})" class="btn-lixeira" title="Excluir Serviço">
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </div>
                 `;

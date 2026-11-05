@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Rota GET: /api/fornecedores
 router.get('/', async (req, res) => {
     try {
-        const query = 'SELECT idfornecedor, ativo, nome, cnpj, telefone, especialidade, email, avaldesempenho FROM fornecedor ORDER BY nome;';
+        const query = 'SELECT * FROM fornecedor ORDER BY nome;';
         const resultado = await db.query(query);
         return res.status(200).json({ sucesso: true, fornecedores: resultado.rows });
     } catch (e) {
@@ -14,7 +13,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Rota POST: /api/fornecedores/criar
 router.post('/criar', async (req, res) => {
     const { nome, cnpj, telefone, especialidade, email, avalDesempenho } = req.body;
 
@@ -40,12 +38,10 @@ router.post('/criar', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao criar fornecedor:", e);
-        const mensagemErro = e.detail || e.message || 'Erro ao processar o cadastro do fornecedor.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Erro ao processar o cadastro do fornecedor.' });
     }
 });
 
-// Rota DELETE (Inativar): /api/fornecedores/:id
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -60,8 +56,7 @@ router.delete('/:id', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao inativar fornecedor:", e);
-        const mensagemErro = e.detail || e.message || 'Não foi possível inativar o fornecedor.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Não foi possível inativar o fornecedor.' });
     }
 });
 

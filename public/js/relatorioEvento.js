@@ -1,50 +1,50 @@
-let idEventoCorrente = null;
+let idEvento = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    idEventoCorrente = params.get('idEvento') || params.get('idevento');
+    idEvento = params.get('idevento');
 
-    if (!idEventoCorrente) {
+    if (!idEvento) {
         alert("Nenhum evento especificado.");
         window.location.href = './homeCliente.html';
         return;
     }
 
-    await carregarDadosRelatorio();
+    await carregaRelatorio();
 
     const form = document.getElementById("formAssinarRelatorio");
-    form.addEventListener("submit", assinarRelatorioHandler);
+    form.addEventListener("submit", assinaRelatorioAux);
 });
 
-async function carregarDadosRelatorio() {
+async function carregaRelatorio() {
     try {
-        const resposta = await fetch(`http://localhost:3000/api/relatorios/evento/${idEventoCorrente}`);
+        const resposta = await fetch(`http://localhost:3000/api/relatorios/evento/${idEvento}`);
         const resultado = await resposta.json();
 
         if (resposta.ok) {
             const { relatorio, fotos } = resultado;
 
             document.getElementById("idRelatorio").value = relatorio.idrelatorio;
-            document.getElementById("avaliacaoGeral").value = relatorio.avaliacaogeral !== null ? relatorio.avaliacaogeral : '';
+            document.getElementById("avaliacaoGeral").value = relatorio.avaliacaogeral != null ? relatorio.avaliacaogeral : '';
             document.getElementById("observacoes").value = relatorio.observacoes || '';
-            document.getElementById("nomeEventoTitulo").textContent = `Evento ID: ${idEventoCorrente}`;
+            document.getElementById("nomeEventoTitulo").textContent = `Evento ID: ${idEvento}`;
 
-            const jaAssinado = relatorio.avaliacaogeral !== null;
-            const statusEl = document.getElementById("statusRelatorioTexto");
-            const mediaEl = document.getElementById("nota");
-            const buttonSubmit = document.getElementById("btnSalvarAssinar");
+            const jaAssinado = relatorio.avaliacaogeral != null;
+            const status = document.getElementById("statusRelatorioTexto");
+            const nota = document.getElementById("nota");
+            const submit = document.getElementById("btnSalvarAssinar");
 
             if (jaAssinado) {
-                statusEl.textContent = "Assinado";
-                statusEl.className = "text-green-600 font-bold";
-                mediaEl.textContent = relatorio.avaliacaogeral;
-                buttonSubmit.disabled = true;
-                buttonSubmit.innerHTML = "Relatório já assinado";
+                status.textContent = "Assinado";
+                status.className = "text-green-600 font-bold";
+                nota.textContent = relatorio.avaliacaogeral;
+                submit.disabled = true;
+                submit.innerHTML = "Relatório já assinado";
 
             } else {
-                statusEl.textContent = "Pendente de Assinatura";
-                statusEl.className = "text-orange-500 font-bold";
-                mediaEl.textContent = "Não avaliado";
+                status.textContent = "Não assinado";
+                status.className = "text-orange-500 font-bold";
+                nota.textContent = "Não avaliado";
             }
 
             renderizarGaleria(fotos);
@@ -62,7 +62,7 @@ function renderizarGaleria(fotos) {
     const galeria = document.getElementById("galeriaFotos");
 
     if (!fotos || fotos.length === 0) {
-        galeria.innerHTML = '<p id="semFotosMsg" class="text-sm text-gray-400 italic col-span-full py-6 text-center">Nenhuma foto cadastrada ainda.</p>';
+        galeria.innerHTML = '<p id="semFotosMsg" class="text-gray-400 italic text-center">Nenhuma foto cadastrada ainda.</p>';
         return;
     }
 
@@ -71,13 +71,13 @@ function renderizarGaleria(fotos) {
         const card = document.createElement("div");
         card.className = "imagem";
         card.innerHTML = `
-            <img src="http://localhost:3000/api/relatorios/foto/${foto.idfoto}" alt="${foto.nomefoto || 'Foto'}" class="w-full h-24 object-cover rounded mb-1">
+            <img src="http://localhost:3000/api/relatorios/foto/${foto.idfoto}">
         `;
         galeria.appendChild(card);
     });
 }
 
-async function assinarRelatorioHandler(e) {
+async function assinaRelatorioAux(e) {
     e.preventDefault();
 
     const formData = new FormData();

@@ -99,9 +99,9 @@ button {
     font-weight: bold;
 }
 
-.vermelho {background: var(--red); }
-.verde {background: var(--green); }
-.azul {background-color: var(--main);}
+.vermelho {color: white; background: var(--red); }
+.verde    {color: white; background: var(--green); }
+.azul     {color: white; background: var(--main);}
 
 h1 {
     color: var(--main);

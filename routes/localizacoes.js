@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Rota GET: /api/localizacoes
 router.get('/', async (req, res) => {
     try {
-        const query = 'SELECT idlocalizacao, nome, endereco, infradisp, capmaxima FROM localizacao ORDER BY nome;';
+        const query = 'SELECT * FROM localizacao ORDER BY nome;';
         const resultado = await db.query(query);
         return res.status(200).json({ sucesso: true, localizacoes: resultado.rows });
     } catch (e) {
@@ -14,12 +13,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Rota POST: /api/localizacoes/criar (Única e atualizada com os 6 parâmetros)
 router.post('/criar', async (req, res) => {
     const { valorLocacao, nome, endereco, capMaxima, area, infraDisp } = req.body;
 
     try {
-        // A ordem dos parâmetros aqui ($1 a $6) deve ser idêntica à ordem criada no PostgreSQL
         const query = 'SELECT criarLocalizacao($1, $2, $3, $4, $5, $6) AS idlocalizacao;';
         const values = [valorLocacao, nome, endereco, capMaxima, area, infraDisp || ''];
         
@@ -34,12 +31,10 @@ router.post('/criar', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao criar localização:", e);
-        const mensagemErro = e.detail || e.message || 'Erro ao processar o cadastro da localização.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Erro ao processar o cadastro da localização.' });
     }
 });
 
-// Rota DELETE: /api/localizacoes/:id
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -54,8 +49,7 @@ router.delete('/:id', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao deletar localização:", e);
-        const mensagemErro = e.detail || e.message || 'Não foi possível excluir a localização.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro:  e.message || 'Não foi possível excluir a localização.' });
     }
 });
 

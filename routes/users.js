@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcrypt");
 
-// Cadastro de cliente
 router.post('/cadastro/cliente', async (req, res) => {
     const { nome, senha, telefone, email, endereco, cpf_cnpj } = req.body;
 
@@ -28,7 +27,6 @@ router.post('/cadastro/cliente', async (req, res) => {
     }
 });
 
-// Cadastro de participante
 router.post('/cadastro/participante', async (req, res) => {
     const { nome, senha, telefone, email } = req.body;
 

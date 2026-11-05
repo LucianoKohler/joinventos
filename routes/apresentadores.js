@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// Rota GET: /api/apresentadores
 router.get('/', async (req, res) => {
     try {
-        const query = 'SELECT idapresentador, nome, email, telefone FROM apresentador ORDER BY nome;';
+        const query = 'SELECT * FROM apresentador ORDER BY nome;';
         const resultado = await db.query(query);
         return res.status(200).json({ sucesso: true, apresentadores: resultado.rows });
     } catch (e) {
@@ -38,7 +37,6 @@ router.post('/criar', async (req, res) => {
     }
 });
 
-// Rota DELETE: /api/apresentadores/:id (Usando SQL direto, sem stored function)
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 

@@ -8,20 +8,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await Promise.all([
-        carregarMeusEventosCriados(idCliente),
-        carregarTodosEventos(idCliente)
+        carregaMeusEventos(idCliente),
+        carregaTodosEventos(idCliente)
     ]);
 });
 
-// QUERY 1: Eventos CRIADOS pelo cliente (Exibidos na div da esquerda: Futuros e Passados)
-async function carregarMeusEventosCriados(idCliente) {
+async function carregaMeusEventos(idCliente) {
     const containerFuturos = document.getElementById("eventosFuturos");
     const containerPassados = document.getElementById("eventosPassados");
 
     if (!containerFuturos || !containerPassados) return;
 
     try {
-        // Rota que retorna os eventos criados pelo organizador
         const resposta = await fetch(`http://localhost:3000/api/eventos/criados/${idCliente}`);
         const dados = await resposta.json();
 
@@ -44,7 +42,7 @@ async function carregarMeusEventosCriados(idCliente) {
             hoje.setHours(0, 0, 0, 0);
 
             eventos.forEach(evento => {
-                const dataRaw = evento.data_evento || evento.datainicio;
+                const dataRaw = evento.datainicio;
                 const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 
                 let dataFormatada = 'Data a definir';
@@ -56,10 +54,8 @@ async function carregarMeusEventosCriados(idCliente) {
                     dataFormatada = `${dia}/${mes}/${ano}`;
                 }
 
-                // Badge de status do evento (sem status de ingresso)
                 const statusEventoBadge = evento.status ? `<span class="badge status-evento">${evento.status}</span>` : '';
 
-                // Botão extra de relatório apenas para eventos PASSADOS criados pelo cliente
                 let botaoRelatorioHTML = '';
                 if (dataEvento < hoje) {
                     botaoRelatorioHTML = `<button onclick="gerarRelatorio(${evento.idevento})" class="btn-relatorio">Gerar Relatório</button>`;
@@ -67,17 +63,17 @@ async function carregarMeusEventosCriados(idCliente) {
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
-                        <div class="card-header">
+                        <div>
                             <h3>${evento.nomeevento}</h3>
                             <hr>
                             ${statusEventoBadge}
                             <span class="badge data">${dataFormatada}</span>
                         </div>
-                        <div class="card-body">
+                        <div>
                             <p><i>${evento.descricao || 'Sem descrição'}</i></p>
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
-                        <div class="card-footer">
+                        <div>
                             <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
                             ${botaoRelatorioHTML}
                         </div>
@@ -104,8 +100,7 @@ async function carregarMeusEventosCriados(idCliente) {
     }
 }
 
-// QUERY 2: Todos os eventos do sistema (Exibidos na div da direita)
-async function carregarTodosEventos(idCliente) {
+async function carregaTodosEventos(idCliente) {
     const mainContent = document.getElementById("mainContent");
     if (!mainContent) return;
 
@@ -135,16 +130,16 @@ async function carregarTodosEventos(idCliente) {
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
-                        <div class="card-header">
+                        <div>
                             <h3>${evento.nome_evento}</h3>
                             <hr>
                             <span class="badge data">${dataFormatada}</span>
                         </div>
-                        <div class="card-body">
+                        <div>
                             <p><i>${evento.descricao || 'Sem descrição'}</i></p>
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
-                        <div class="card-footer">
+                        <div>
                             <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
@@ -166,6 +161,5 @@ function verDetalhes(idEvento) {
 }
 
 function gerarRelatorio(idEvento) {
-    // Redireciona ou abre a lógica de relatório para o evento passado
     window.location.href = "./relatorioEvento.html?idevento=" + idEvento;
 }

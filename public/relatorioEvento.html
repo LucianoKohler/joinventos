@@ -28,10 +28,8 @@
             <div><hr></div>
         </div>
 
-        <!-- Layout de Duas Divs Principais na mesma tela -->
         <div id="relatorio-wrapper" class="flex gap-4">
             
-            <!-- DIV 1: ASSINAR / PREENCHER EVENTO -->
             <div class="content shadow-2xl grow-1">
                 <div>
                     <div class="flex items-center gap-2">
@@ -61,13 +59,12 @@
 
                         <div>
                             <button type="submit" id="btnSalvarAssinar">
-                                <i data-lucide="check-circle" width="18px" height="18px"></i> Assinar e Salvar Relatório
+                                <i data-lucide="check-circle"></i> Assinar e Salvar Relatório
                             </button>
                         </div>
                     </form>
             </div>
 
-            <!-- DIV 2: INFORMAÇÕES E FOTOS DO EVENTO -->
             <div class="content shadow-2xl grow-2">
                 <div class="flex items-center gap-2">
                     <h1>Informações e Fotos do Evento</h1>
@@ -85,7 +82,7 @@
                 </div>
 
                 <div>
-                    <div id="galeriaFotos">
+                    <div id="galeriaFotos" class="flex gap-4">
                         <p id="semFotosMsg">Nenhuma foto cadastrada ainda.</p>
                     </div>
                 </div>
