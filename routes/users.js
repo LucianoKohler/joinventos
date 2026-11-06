@@ -11,7 +11,7 @@ router.post('/cadastro/cliente', async (req, res) => {
 
     try {
         const out = await db.query(
-            `SELECT criaCliente($1, $2, $3, $4, $5, $6)`, 
+            `SELECT criaCliente($1, $2, $3, $4, $5, $6) AS idcliente`, 
             [nome, senhaCript, telefone, email, endereco, cpf_cnpj]);
             res.status(201).json({ 
                 mensagem: 'Cliente cadastrado com sucesso!', 
@@ -32,17 +32,13 @@ router.post('/cadastro/participante', async (req, res) => {
 
     try {
         const out = await db.query(
-            `INSERT INTO participante (nome, senha, 
-            telefone, email)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;`, 
+            `SELECT criaParticipante($1, $2, $3, $4) AS idparticipante`, 
             [nome, senhaCript, telefone, email]);
             res.status(201).json({ 
                 mensagem: 'Participante cadastrado com sucesso!', 
                 token: out.rows[0].idparticipante,
                 tipo: 'participante'
-            });    
-        } catch (e) {
+            });            } catch (e) {
         console.log(e);
             res.status(500).json({ erro: 'Cadastro de participante falhou' });
     }

@@ -36,6 +36,31 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
 
+            const containerServicos = document.getElementById("listaServicos");
+            if (evento.servicos && evento.servicos.length > 0) {
+                containerServicos.innerHTML = evento.servicos.map(serv => `
+                    <div>
+                        <b>${serv.nomeservico || 'Serviço'}</b>
+                        <p>Qtd: ${serv.quantcontratada} | Valor: R$ ${Number(serv.valoracordado).toFixed(2)}</p>
+                    </div>
+                `).join('');
+            } else {
+                containerServicos.innerHTML = `<p class="italic text-gray-500">Nenhum serviço informado.</p>`;
+            }
+
+            const containerCronograma = document.getElementById("listaCronograma");
+            if (evento.cronograma && evento.cronograma.length > 0) {
+                containerCronograma.innerHTML = evento.cronograma.map(cron => `
+                    <div>
+                        <b>Atividade (Duração: ${cron.duracaominutos} min)</b>
+                        ${cron.nomeapresentador ? `<p>Apresentador: ${cron.nomeapresentador}</p>` : ''}
+                        <p>Início: ${formatarData(cron.datainicio)}</p>
+                    </div>
+                `).join('');
+            } else {
+                containerCronograma.innerHTML = `<p class="italic text-gray-500">Nenhum cronograma cadastrado.</p>`;
+            }
+
             const divPassado = document.getElementById("evento-passado");
             const divFuturo = document.getElementById("evento-futuro");
             const divNaoAutor = document.getElementById("nao-seu-evento");
@@ -61,7 +86,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!autor) {
                 if (divNaoAutor) divNaoAutor.style.display = "flex";
             } else {
-                // é autor, checa a data
                 const dataRaw = evento.datainicio;
                 const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 
@@ -74,9 +98,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const hoje = new Date();
                 hoje.setHours(0, 0, 0, 0);
 
-                if (dataEvento < hoje) { // Evento já passou
+                if (dataEvento < hoje) { 
                     if (divPassado) divPassado.style.display = "flex";
-                } else { // Evento ainda não passou
+                } else { 
                     if (divFuturo) divFuturo.style.display = "flex";
                 }
             }
@@ -91,7 +115,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("Não foi possível carregar as informações do evento.");
     }
 });
-
 
 function gerarRelatorio() {
     const params = new URLSearchParams(window.location.search);
@@ -126,7 +149,6 @@ async function cancelarEvento() {
     }
 }
 
-// Auxiliar
 function formatarData(dataStr) {
     if (!dataStr) return 'A definir';
     const dataPartes = dataStr.split('T')[0].split('-');

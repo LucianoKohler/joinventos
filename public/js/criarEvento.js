@@ -1,4 +1,7 @@
 let passo = 1;
+let contadorCronograma = 0;
+
+// Esse é parrudo
 
 let dados = {
     dadosIniciais: {},
@@ -235,8 +238,7 @@ function adicionaCronograma() {
     const msgVazia = document.getElementById("semCronogramaMsg");
     if (msgVazia) msgVazia.remove();
 
-    let contador = 0;
-    const rowId = `cron-row-${++contador}`;
+    const rowId = `cron-row-${++contadorCronograma}`; // Usa o contador global incrementado
     const linhaDiv = document.createElement("div");
     linhaDiv.className = "flex flex-wrap px-2! gap-2 rounded-lg border border-sky-600 h-min p-2 items-center";
     linhaDiv.id = rowId;
@@ -262,7 +264,8 @@ function adicionaCronograma() {
         <div class="flex-2 min-w-[150px]">
             <label class="font-bold text-xs">APRESENTADOR</label>
             <select class="select-apresentador w-full p-1 text-sm border rounded bg-white">
-                ${optionsApresentador}
+                <option value="">Sem apresentador</option>
+                ${apresentadores.map(a => `<option value="${a.idapresentador}">${a.nome}</option>`).join('')}
             </select>
         </div>
         <button type="button" onclick="document.getElementById('${rowId}').remove()" class="vermelho p-2 mt-4 cursor-pointer flex items-center justify-center" title="Remover">
@@ -284,18 +287,47 @@ function coletaCronograma() {
         const inputCache = linha.querySelector(".input-cache");
         const selectApresentador = linha.querySelector(".select-apresentador");
 
-        // Formata a data
         if (inputDataInicio && inputDataInicio.value && inputDuracao && inputCache) {
             let dataValor = inputDataInicio.value.replace('T', ' ');
             if (dataValor.length === 16) { 
                 dataValor += ':00';
             }
 
+            const idApresVal = selectApresentador.value ? parseInt(selectApresentador.value) : null;
+
             dados.cronograma.push({
                 dataInicio: dataValor,
                 duracaoMinutos: parseInt(inputDuracao.value),
                 valorCache: parseFloat(inputCache.value),
-                idApresentador: parseInt(selectApresentador.value)
+                idApresentador: idApresVal
+            });
+        }
+    });
+}
+
+function coletaCronograma() {
+    dados.cronograma = [];
+    const linhas = document.querySelectorAll("#cronogramaContainer > div");
+
+    linhas.forEach(linha => {
+        const inputDataInicio = linha.querySelector(".input-data-inicio");
+        const inputDuracao = linha.querySelector(".input-duracao");
+        const inputCache = linha.querySelector(".input-cache");
+        const selectApresentador = linha.querySelector(".select-apresentador");
+
+        if (inputDataInicio && inputDataInicio.value && inputDuracao && inputCache) {
+            let dataValor = inputDataInicio.value.replace('T', ' ');
+            if (dataValor.length === 16) { 
+                dataValor += ':00';
+            }
+
+            const idApresVal = selectApresentador.value ? parseInt(selectApresentador.value) : null;
+
+            dados.cronograma.push({
+                dataInicio: dataValor,
+                duracaoMinutos: parseInt(inputDuracao.value),
+                valorCache: parseFloat(inputCache.value),
+                idApresentador: idApresVal
             });
         }
     });

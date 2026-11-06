@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const resposta = await fetch(url);
         const dados = await resposta.json();
 
-        if (resposta.ok) {
+if (resposta.ok) {
             const evento = dados.evento;
-            temIngresso = evento.idingresso || null; // Null se não tem ou o valor do id do ingresso se tem
+            temIngresso = evento.idingresso || null;
 
             document.getElementById("nomeEvento").innerText = evento.nome_evento;
             document.getElementById("categoriaEvento").innerText = evento.categoria || 'Geral';
@@ -34,6 +34,31 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("valorIngresso").innerText = `R$ ${Number(evento.valoringresso).toFixed(2)}`;
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
+
+            const containerServicos = document.getElementById("listaServicos");
+            if (evento.servicos && evento.servicos.length > 0) {
+                containerServicos.innerHTML = evento.servicos.map(serv => `
+                    <div>
+                        <b>${serv.nomeservico || 'Serviço'}</b>
+                        <p>Qtd: ${serv.quantcontratada} | Valor: R$ ${Number(serv.valoracordado).toFixed(2)}</p>
+                    </div>
+                `).join('');
+            } else {
+                containerServicos.innerHTML = `<p class="italic text-gray-500">Nenhum serviço informado.</p>`;
+            }
+
+            const containerCronograma = document.getElementById("listaCronograma");
+            if (evento.cronograma && evento.cronograma.length > 0) {
+                containerCronograma.innerHTML = evento.cronograma.map(cron => `
+                    <div>
+                        <b>Atividade (Duração: ${cron.duracaominutos} min)</b>
+                        ${cron.nomeapresentador ? `<p>Apresentador: ${cron.nomeapresentador}</p>` : ''}
+                        <p>Início: ${formatarData(cron.datainicio)}</p>
+                    </div>
+                `).join('');
+            } else {
+                containerCronograma.innerHTML = `<p class="italic text-gray-500">Nenhum cronograma cadastrado.</p>`;
+            }
 
             const divCadastrado = document.getElementById("cadastrado");
             const divNaoCadastrado = document.getElementById("nao-cadastrado");

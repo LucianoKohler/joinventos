@@ -158,10 +158,10 @@ router.delete('/cancelar/:idingresso', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    const { idparticipante } = req.query;
+    let { idparticipante } = req.query;
 
     try {
-        const query = `
+        const queryEvento = `
             SELECT 
                 e.idevento, 
                 e.nomeevento AS nome_evento, 
@@ -189,15 +189,35 @@ router.get('/:id', async (req, res) => {
             WHERE e.idevento = $1;
         `;
 
-        const resultado = await db.query(query, [id, idparticipante || null]);
+        const resultadoEvento = await db.query(queryEvento, [id, idparticipante]);
         
-        if (resultado.rowCount === 0) {
+        if (resultadoEvento.rowCount === 0) {
             return res.status(404).json({ erro: 'Evento não encontrado.' });
         }
 
+        const evento = resultadoEvento.rows[0];
+
+        const queryServicos = `
+            SELECT its.quantcontratada, its.valoracordado, s.descricao AS nomeservico 
+            FROM itemservico its
+            JOIN servico s ON its.idservico = s.idservico
+            WHERE its.idevento = $1;
+        `;
+        const resultadoServicos = await db.query(queryServicos, [id]);
+        evento.servicos = resultadoServicos.rows;
+
+        const queryCronograma = `
+            SELECT cr.duracaominutos, cr.datainicio, cr.valorcache, a.nome AS nomeapresentador 
+            FROM cronograma cr
+            LEFT JOIN apresentador a ON cr.idapresentador = a.idapresentador
+            WHERE cr.idevento = $1;
+        `;
+        const resultadoCronograma = await db.query(queryCronograma, [id]);
+        evento.cronograma = resultadoCronograma.rows;
+
         return res.status(200).json({
             sucesso: true,
-            evento: resultado.rows[0]
+            evento: evento
         });
 
     } catch (e) {
