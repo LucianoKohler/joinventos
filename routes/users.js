@@ -20,7 +20,7 @@ router.post('/cadastro/cliente', async (req, res) => {
             });    
         } catch (e) {
         console.log(e);
-            res.status(500).json({ erro: 'Cadastro de cliente falhou' });
+            res.status(500).json({ erro: 'Cadastro de cliente falhou', detalhe: e.message });
     }
 });
 
@@ -40,7 +40,7 @@ router.post('/cadastro/participante', async (req, res) => {
                 tipo: 'participante'
             });            } catch (e) {
         console.log(e);
-            res.status(500).json({ erro: 'Cadastro de participante falhou' });
+            res.status(500).json({ erro: 'Cadastro de participante falhou', detalhe: e.message });
     }
 });
 

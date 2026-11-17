@@ -40,7 +40,7 @@ b {
     width: 100%;
 }
 
-#cadastrado, #nao-cadastrado, #evento-futuro, #nao-seu-evento, #evento-passado, #evento-cancelado {
+#cadastrado, #nao-cadastrado, #evento-futuro, #nao-seu-evento, #evento-passado, #evento-cancelado, #ja-passou {
     height: 100%;
     text-align: center;
     display: none;

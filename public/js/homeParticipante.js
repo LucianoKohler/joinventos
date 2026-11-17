@@ -52,12 +52,16 @@ async function carregaMeusEventos(idParticipante) {
                     dataFormatada = `${dia}/${mes}/${ano}`;
                 }
 
-                let statusBadge = '';
-                if (evento.confirmacao === true) {
-                    statusBadge = `<span class="badge confirmado">Confirmado</span>`;
-                } else {
-                    statusBadge = `<span class="badge pendente">Não confirmado</span>`;
-                }
+            let statusBadge = "";
+            if (dataEvento && dataEvento < hoje) {
+                statusBadge = `<span class="badge amarelo">Já aconteceu</span>`;
+            } else if (!evento.idingresso) {
+                statusBadge = `<span class="badge nao-cadastrado">Não cadastrado</span>`;
+            } else if (evento.confirmacao === true) {
+                statusBadge = `<span class="badge confirmado">Confirmado</span>`;
+            } else {
+                statusBadge = `<span class="badge pendente">Não confirmado</span>`;
+            }
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">
@@ -116,25 +120,33 @@ async function carregaTodosEventos(idParticipante) {
 
             mainContent.innerHTML = "";
 
-            eventos.forEach(evento => {
+eventos.forEach(evento => {
                 const dataRaw = evento.data_evento || evento.datainicio;
                 const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
                 let dataFormatada = 'Data a definir';
 
+                let dataEvento = null;
                 if (dataEventoStr) {
                     const [ano, mes, dia] = dataEventoStr.split('-');
                     dataFormatada = `${dia}/${mes}/${ano}`;
+                    dataEvento = new Date(ano, mes - 1, dia);
                 }
 
-                // Definição das 3 flags
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+
                 let statusBadge = '';
-                if (!evento.idingresso) {
+                
+                if (dataEvento && dataEvento < hoje) {
+                    statusBadge = `<span class="badge amarelo">Já aconteceu</span>`;
+                } else if (!evento.idingresso) {
                     statusBadge = `<span class="badge nao-cadastrado">Não cadastrado</span>`;
                 } else if (evento.confirmacao === true) {
                     statusBadge = `<span class="badge confirmado">Confirmado</span>`;
                 } else {
                     statusBadge = `<span class="badge pendente">Não confirmado</span>`;
                 }
+
 
                 const cardHTML = `
                     <div class="evento-card shadow-xl">

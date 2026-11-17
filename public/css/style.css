@@ -3,6 +3,7 @@
     --main: #0ea5e9;
     --green: rgb(35, 194, 75);
     --red: rgb(191, 28, 28);
+    --yellow: rgb(189, 157, 0);;
 }
 
 @font-face {
@@ -101,7 +102,8 @@ button {
 
 .vermelho {color: white; background: var(--red); }
 .verde    {color: white; background: var(--green); }
-.azul     {color: white; background: var(--main);}
+.azul     {color: white; background: var(--main); }
+.amarelo  {color: white; background: var(--yellow); }
 
 h1 {
     color: var(--main);

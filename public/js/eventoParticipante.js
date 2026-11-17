@@ -60,26 +60,50 @@ if (resposta.ok) {
                 containerCronograma.innerHTML = `<p class="italic text-gray-500">Nenhum cronograma cadastrado.</p>`;
             }
 
-            const divCadastrado = document.getElementById("cadastrado");
+const divCadastrado = document.getElementById("cadastrado");
             const divNaoCadastrado = document.getElementById("nao-cadastrado");
+            const divJaPassou = document.getElementById("ja-passou"); // Nova referência
             const btnConfirmar = document.getElementById("confirmar");
             const btnCancelar = document.getElementById("cancelar");
 
-            const estaCadastrado = Boolean(temIngresso);
-            const estaConfirmado = evento.confirmacao == true;
-
-            if (estaCadastrado) {
-                if (divCadastrado) divCadastrado.style.display = "flex";
-                if (divNaoCadastrado) divNaoCadastrado.style.display = "none";
-
-                if (estaConfirmado && btnConfirmar) {
-                    btnCancelar.style.display = "none";
-                    btnConfirmar.disabled = true;
-                    btnConfirmar.innerText = "Presença Confirmada";
-                }
-            } else {
+            // Função auxiliar para ocultar todos os estados principais antes de exibir o correto
+            function ocultarEstados() {
                 if (divCadastrado) divCadastrado.style.display = "none";
-                if (divNaoCadastrado) divNaoCadastrado.style.display = "flex";
+                if (divNaoCadastrado) divNaoCadastrado.style.display = "none";
+                if (divJaPassou) divJaPassou.style.display = "none";
+            }
+
+            ocultarEstados();
+
+            const dataRaw = evento.datainicio;
+            const dataEventoStr = dataRaw ? dataRaw.split('T')[0] : '';
+            
+            let dataEvento = new Date();
+            if (dataEventoStr) {
+                const [ano, mes, dia] = dataEventoStr.split('-');
+                dataEvento = new Date(ano, mes - 1, dia);
+            }
+
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            if (dataEvento < hoje) {
+                if (divJaPassou) divJaPassou.style.display = "flex";
+            } else {
+                const estaCadastrado = Boolean(temIngresso);
+                const estaConfirmado = evento.confirmacao == true;
+
+                if (estaCadastrado) {
+                    if (divCadastrado) divCadastrado.style.display = "flex";
+
+                    if (estaConfirmado && btnConfirmar) {
+                        if (btnCancelar) btnCancelar.style.display = "none";
+                        btnConfirmar.disabled = true;
+                        btnConfirmar.innerText = "Presença Confirmada";
+                    }
+                } else {
+                    if (divNaoCadastrado) divNaoCadastrado.style.display = "flex";
+                }
             }
 
         } else {
