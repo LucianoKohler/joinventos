@@ -2,45 +2,59 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcrypt");
+const { ObjectId } = require('mongodb');
 
 router.post('/cadastro/cliente', async (req, res) => {
     const { nome, senha, telefone, email, endereco, cpf_cnpj } = req.body;
-
-    // Hash de senha
-    const senhaCript = await bcrypt.hash(senha, 10); // 10 = n° saltos
+    const senhaCript = await bcrypt.hash(senha, 10);
 
     try {
-        const out = await db.query(
-            `SELECT criaCliente($1, $2, $3, $4, $5, $6) AS idcliente`, 
-            [nome, senhaCript, telefone, email, endereco, cpf_cnpj]);
-            res.status(201).json({ 
-                mensagem: 'Cliente cadastrado com sucesso!', 
-                token: out.rows[0].idcliente,
-                tipo: 'cliente'
-            });    
-        } catch (e) {
+        const database = await db.getDb();
+        const novoCliente = {
+            nome,
+            senha: senhaCript,
+            telefone,
+            email,
+            endereco,
+            cpf_cnpj
+        };
+
+        const resultado = await database.collection('clientes').insertOne(novoCliente);
+
+        res.status(201).json({ 
+            mensagem: 'Cliente cadastrado com sucesso!', 
+            token: resultado.insertedId.toString(),
+            tipo: 'cliente'
+        });    
+    } catch (e) {
         console.log(e);
-            res.status(500).json({ erro: 'Cadastro de cliente falhou', detalhe: e.message });
+        res.status(500).json({ erro: 'Cadastro de cliente falhou', detalhe: e.message });
     }
 });
 
 router.post('/cadastro/participante', async (req, res) => {
     const { nome, senha, telefone, email } = req.body;
-
-    // Hash de senha
-    const senhaCript = await bcrypt.hash(senha, 10); // 10 = n° saltos
+    const senhaCript = await bcrypt.hash(senha, 10);
 
     try {
-        const out = await db.query(
-            `SELECT criaParticipante($1, $2, $3, $4) AS idparticipante`, 
-            [nome, senhaCript, telefone, email]);
-            res.status(201).json({ 
-                mensagem: 'Participante cadastrado com sucesso!', 
-                token: out.rows[0].idparticipante,
-                tipo: 'participante'
-            });            } catch (e) {
+        const database = await db.getDb();
+        const novoParticipante = {
+            nome,
+            senha: senhaCript,
+            telefone,
+            email
+        };
+
+        const resultado = await database.collection('participantes').insertOne(novoParticipante);
+
+        res.status(201).json({ 
+            mensagem: 'Participante cadastrado com sucesso!', 
+            token: resultado.insertedId.toString(),
+            tipo: 'participante'
+        });            
+    } catch (e) {
         console.log(e);
-            res.status(500).json({ erro: 'Cadastro de participante falhou', detalhe: e.message });
+        res.status(500).json({ erro: 'Cadastro de participante falhou', detalhe: e.message });
     }
 });
 
@@ -48,35 +62,29 @@ router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     try {
-        let resultado = await db.query(
-            `SELECT * FROM participante WHERE email = $1;`, 
-            [email]
-        );
+        const database = await db.getDb();
 
-        if (resultado.rowCount > 0) {
-            const usuario = resultado.rows[0];
+        // Tenta achar em participantes 
+        let usuario = await database.collection('participantes').findOne({ email });
+
+        if (usuario) {
             const senhaOK = await bcrypt.compare(senha, usuario.senha);
             
             if (!senhaOK) {
                 return res.status(403).json({ mensagem: 'E-mail ou senha incorretos' });
             }
 
-            console.log(resultado.rows);
             return res.status(200).json({ 
                 mensagem: 'Login efetivado!', 
-                token: usuario.idparticipante, 
+                token: usuario._id.toString(), 
                 tipo: 'participante' 
             });
         }
 
-        // Não achou um participante? Tenta achar um cliente
-        resultado = await db.query(
-            `SELECT * FROM cliente WHERE email = $1;`, 
-            [email]
-        );
+        // Se não achou, tenta achar em clientes
+        usuario = await database.collection('clientes').findOne({ email });
 
-        if (resultado.rowCount > 0) {
-            const usuario = resultado.rows[0];
+        if (usuario) {
             const senhaOK = await bcrypt.compare(senha, usuario.senha);
             
             if (!senhaOK) {
@@ -85,7 +93,7 @@ router.post('/login', async (req, res) => {
 
             return res.status(200).json({ 
                 mensagem: 'Login efetivado!', 
-                token: usuario.idcliente, 
+                token: usuario._id.toString(), 
                 tipo: 'cliente' 
             });
         }

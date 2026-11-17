@@ -30,7 +30,7 @@ INSERT INTO FormaPagamento (nomeFormaPagamento) VALUES
 ('CHEQUE'), 
 ('OUTRO');
 
-INSERT INTO Localizacao (valorLocacao, nome, endereco, capMaxima, area, infraDisp) VALUES 
+INSERT INTO Localizacao (valorlocacao, nome, endereco, capmaxima, area, infradisp) VALUES 
 (5000.00, 'Espaço Garden Festas', 'Rua das Palmeiras, 1000 - Centro', 350, 600.50, 'Ar condicionado, mesas, cadeiras, palco modulado e gerador próprio.'),
 (12000.00, 'Centro de Convenções Joinville', 'Av. Beira Rio, 500 - Saguaçu', 1500, 2500.00, 'Infraestrutura completa de som, projeção, Wi-Fi de alta velocidade e camarins.'),
 (2500.00, 'Chácara Recanto Verde', 'Estrada Dona Francisca, km 12 - Pirabeiraba', 150, 1200.00, 'Área verde aberta, churrasqueira, piscina e cozinha equipada.');
@@ -41,7 +41,7 @@ INSERT INTO Localizacao (valorLocacao, nome, endereco, capMaxima, area, infraDis
 ('Ana Souza Eventos', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '47991112222', 'ana.cliente@email.com', 'Rua XV de Novembro, 200 - Centro', '12.345.678/0001-99'),
 ('Carlos Eduardo Silva', '$2b$10$Ep99D8N.0q4K3g8Y6Q8vW.K2Wv5dJ7f9h1j3k5l7z9x2c4v6b8n0m', '47998887766', 'carlos.cliente@email.com', 'Rua Visconde de Taunay, 550 - Bucarein', '98.765.432/0001-11');
 
-INSERT INTO Fornecedor (ativo, nome, cnpj, telefone, especialidade, email, avalDesempenho) VALUES 
+INSERT INTO Fornecedor (ativo, nome, cnpj, telefone, especialidade, email, avaldesempenho) VALUES 
 (true, 'Gastronomia & Sabor Ltda', '11.222.333/0001-44', '4734331122', 'BUFFET', 'contato@gastronomiasabor.com', 9.5),
 (true, 'Luz & Som Produções', '44.555.666/0001-77', '4734229988', 'SONORIZACAO', 'comercial@luzesom.com', 9.0),
 (true, 'Captura Moments Fotografia', '77.888.999/0001-22', '47988776655', 'FOTOGRAFIA', 'foto@capturamoments.com', 9.8);
@@ -56,7 +56,7 @@ INSERT INTO participante (nome, senha, telefone, email) VALUES
 ('Beatriz Costa', '$2b$10$n9v05LwZtI8L4K5v6s7HvuQ6H1e2r3t4y5u6i7o8p9a0s1d2f3g4h', '47955441122', 'beatriz.participante@email.com'),
 ('teste', '$2b$10$1r5LFEVSm5HjltLot.VECOG5rxVfvapnMrv2mexim53sSWEow6Iii', '47952412971', 'teste@gmail.com');
 
-INSERT INTO Evento (nomeEvento, idCategoriaEvento, dataInicio, dataTermino, horarioInicio, horarioTermino, valorIngresso, numParticipantes, status, idCliente, idLocalizacao, descricao) VALUES 
+INSERT INTO Evento (nomeEvento, idcategoriaevento, datainicio, dataTermino, horarioInicio, horarioTermino, valoringresso, numparticipantes, status, idCliente, idlocalizacao, descricao) VALUES 
 ('Seminário de Tecnologia e Inovação 2026', 4, '2026-07-15', '2026-07-15', '08:00:00', '18:00:00', 150.00, 200, 'CONFIRMADO', 1, 2, 'Um dia inteiro de palestras focadas nas tendências de tecnologia para o mercado corporativo.'),
 ('Workshop de Desenvolvimento Web Moderno', 5, '2026-08-10', '2026-08-10', '13:30:00', '19:00:00', 80.00, 50, 'EM_PREPARACAO', 1, 1, 'Mão na massa com arquitetura de aplicações web eficientes e seguras.'),
 ('Confraternização da Bórus Ltda', 7, '2026-9-20', '2026-9-20', '20:00:00', '03:00:00', 20.00, 100, 'CONFIRMADO', 2, 3, 'Pra fechar o bom andamento da empresa com chave de ouro!'),
@@ -67,30 +67,30 @@ INSERT INTO Servico (unidMedida, ativo, valorUnit, idCategoriaServico, descricao
 ('Hora', true, 350.00, 3, 'Locação e operação técnica de kit de sonorização e microfones sem fio.'),
 ('Unidade', true, 1200.00, 5, 'Cobertura fotográfica integral do evento com entrega de galeria digital.');
 
-INSERT INTO ItemServico (status, quantContratada, valorAcordado, idServico, idFornecedor, idEvento) VALUES 
+INSERT INTO ItemServico (status, quantcontratada, valoracordado, idServico, idFornecedor, idevento) VALUES 
 ('CONFIRMADO', 200.00, 75.00, 1, 1, 1),
 ('CONFIRMADO', 10.00, 350.00, 2, 2, 1),
 ('CONTRATADO', 50.00, 80.00, 1, 1, 2);
 
-INSERT INTO Orcamento (idFormaPagamento, validade, valorTotal, condicoes, descricao, idEvento) VALUES 
+INSERT INTO Orcamento (idFormaPagamento, validade, valortotal, condicoes, descricao, idevento) VALUES 
 (4, '2026-06-30', 21500.00, '50% de entrada via PIX e saldo restante na semana do evento.', 'Orçamento detalhado incluindo locação do espaço e serviços terceirizados.', 1),
 (5, '2026-07-30', 5200.00, 'Pagamento em boleto bancário parcelado em 2x.', 'Orçamento básico para o workshop técnico.', 2);
 
-INSERT INTO Pagamento (dataPagamento, valorTotal, valorPago, idFormaPagamento, idEvento, idCliente) VALUES 
+INSERT INTO Pagamento (dataPagamento, valortotal, valorPago, idFormaPagamento, idevento, idCliente) VALUES 
 ('2026-05-10 14:30:00', 21500.00, 10750.00, 4, 1, 1);
 
-INSERT INTO Cronograma (duracaoMinutos, dataInicio, valorCache, idApresentador, idEvento) VALUES 
+INSERT INTO Cronograma (duracaominutos, datainicio, valorcache, idApresentador, idevento) VALUES 
 (120, '2026-07-15 09:00:00', 2500.00, 1, 1),
 (180, '2026-07-15 14:00:00', 3000.00, 2, 1);
 
 -- Ingressos vinculando os participantes aos eventos criados acima
-INSERT INTO Ingresso (confirmacao, idEvento, idParticipante) VALUES 
+INSERT INTO Ingresso (confirmacao, idevento, idparticipante) VALUES 
 (true, 1, 1),
 (true, 1, 2), 
 (false, 2, 1), -- Mariana Pendente no workshop
 (true, 2, 3); 
 
-INSERT INTO Relatorio (numRealParticipantes, observacoes, idEvento) VALUES 
+INSERT INTO Relatorio (numRealParticipantes, observacoes, idevento) VALUES 
 (190, 'Evento ocorreu dentro do horário previsto, alta satisfação do público com os palestrantes.', 4);
 
--- UPDATE Evento SET idCliente = 3 WHERE idEvento IN (3, 4);
+-- UPDATE Evento SET idCliente = 3 WHERE idevento IN (3, 4);

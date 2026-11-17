@@ -18,13 +18,13 @@ DROP TABLE IF EXISTS CategoriaServico CASCADE;
 DROP TABLE IF EXISTS FormaPagamento CASCADE;
 
 create table Localizacao(
-	idLocalizacao serial primary key,
-	valorLocacao numeric(10,2) not null,
+	idlocalizacao serial primary key,
+	valorlocacao numeric(10,2) not null,
 	nome varchar(50) not null,
 	endereco varchar(100) not null,
-	capMaxima int not null,
+	capmaxima int not null,
 	area numeric not null,
-	infraDisp text
+	infradisp text
 );
 
 create table cliente(
@@ -38,7 +38,7 @@ create table cliente(
 );
 
 create table CategoriaEvento(
-	idCategoriaEvento serial primary key,
+	idcategoriaevento serial primary key,
 	nomeCategoria varchar(20) not null
 
 -- Adicionar depois via DML:
@@ -47,18 +47,18 @@ create table CategoriaEvento(
 );
 
 create table Evento(
-	idEvento serial primary key,
+	idevento serial primary key,
 	nomeEvento varchar(100) not null,
-	idCategoriaEvento int references CategoriaEvento on delete set null,
-	dataInicio date not null,
+	idcategoriaevento int references CategoriaEvento on delete set null,
+	datainicio date not null,
 	dataTermino date not null,
 	horarioInicio time not null,
 	horarioTermino time not null,
-	valorIngresso numeric(10,2) not null,
-	numParticipantes int, -- Esse check não precisa de tabela própria pois o status não foge desses comportamentos
+	valoringresso numeric(10,2) not null,
+	numparticipantes int, -- Esse check não precisa de tabela própria pois o status não foge desses comportamentos
 	status varchar(15) not null check (status in ('ORCAMENTO', 'EM_PREPARACAO', 'CONFIRMADO', 'REALIZADO', 'CANCELADO')),
 	idCliente int not null references Cliente,
-	idLocalizacao int references Localizacao,
+	idlocalizacao int references Localizacao,
 	descricao text
 );
 
@@ -67,7 +67,7 @@ create table Relatorio(
 	numRealParticipantes int not null,
 	avaliacaoGeral numeric(3,1) check (avaliacaoGeral between 0 and 10),
 	observacoes text,
-	idEvento int not null references Evento on delete cascade
+	idevento int not null references Evento on delete cascade
 );
 
 create table Foto(
@@ -85,7 +85,7 @@ create table Fornecedor(
 	telefone varchar(25) not null,
 	especialidade varchar(40),
 	email varchar(40),
-	avalDesempenho numeric(3,1)
+	avaldesempenho numeric(3,1)
 );
 
 create table CategoriaServico(
@@ -106,12 +106,12 @@ create table Servico(
 create table ItemServico(
 	idItemServico serial primary key,
 	status varchar(20) not null check (status in ('CONTRATADO', 'CONFIRMADO', 'CONCLUIDO')) default 'CONTRATADO',
-	quantContratada numeric(10,2) not null,
-	valorAcordado numeric(10,2) not null,
-	valorTotal numeric(10,2) generated always as (quantContratada * valorAcordado) stored,
+	quantcontratada numeric(10,2) not null,
+	valoracordado numeric(10,2) not null,
+	valortotal numeric(10,2) generated always as (quantcontratada * valoracordado) stored,
 	idServico int references Servico on delete set null,
 	idFornecedor int not null references Fornecedor, --só cria um fornecedor sendo a casa mesmo
-	idEvento int references Evento on delete cascade 
+	idevento int references Evento on delete cascade 
 );
 
 create table FormaPagamento(
@@ -125,19 +125,19 @@ create table Orcamento(
 	dataEmissao timestamp(0) default now(),
 	idFormaPagamento int references FormaPagamento on delete set null,
 	validade date not null,
-	valorTotal numeric(10,2) not null,
+	valortotal numeric(10,2) not null,
 	condicoes text,
 	descricao text,
-	idEvento int not null references Evento on delete cascade
+	idevento int not null references Evento on delete cascade
 );
 
 create table Pagamento(
 	idPagamento serial primary key,
 	dataPagamento timestamp(0) default now() not null,
-	valorTotal numeric(10,2) not null,
+	valortotal numeric(10,2) not null,
 	valorPago numeric(10,2) not null,
 	idFormaPagamento int references FormaPagamento on delete set null,
-	idEvento int not null references Evento on delete cascade,
+	idevento int not null references Evento on delete cascade,
 	idCliente int not null references Cliente on delete cascade
 );
 
@@ -151,15 +151,15 @@ create table Apresentador(
 
 create table Cronograma(
 	idCronograma serial primary key,
-	duracaoMinutos int not null,
-	dataInicio timestamp(0) not null,
-	valorCache numeric(10, 2) not null,
+	duracaominutos int not null,
+	datainicio timestamp(0) not null,
+	valorcache numeric(10, 2) not null,
 	idApresentador int references Apresentador on delete set null,
-	idEvento int not null references Evento on delete cascade
+	idevento int not null references Evento on delete cascade
 );
 
 create table participante(
-	idParticipante serial primary key,
+	idparticipante serial primary key,
 	nome varchar(50) not null,
 	senha text not null,
 	telefone varchar(25) not null,
@@ -167,44 +167,44 @@ create table participante(
 );
 
 create table Ingresso(
-	idIngresso serial primary key,
+	idingresso serial primary key,
 	confirmacao boolean default false,
-	idEvento int not null references Evento,
-	idParticipante int not null references Participante on delete cascade
+	idevento int not null references Evento,
+	idparticipante int not null references Participante on delete cascade
 );
 
 ----------------------------------------------------------------------------
 
 create or replace function criaEvento(
-	nomeEvento_p varchar, idCategoriaEvento_p integer, dataInicio_p date, dataTermino_p date, horarioInicio_p time, horarioTermino_p time, 
-	valorIngresso_p numeric, numParticipantes_p integer, idCliente_p integer, idLocalizacao_p integer, descricao_p text default '') returns integer as
+	nomeEvento_p varchar, idcategoriaevento_p integer, datainicio_p date, dataTermino_p date, horarioInicio_p time, horarioTermino_p time, 
+	valoringresso_p numeric, numparticipantes_p integer, idCliente_p integer, idlocalizacao_p integer, descricao_p text default '') returns integer as
 $$
 declare
-	v_idEvento integer;
-	v_capMaxima integer;
+	v_idevento integer;
+	v_capmaxima integer;
 begin
 
-	if (valorIngresso_p < 0 or valorIngresso_p is null) then
+	if (valoringresso_p < 0 or valoringresso_p is null) then
 		raise exception 'O valor do ingresso não pode ser um valor negativo (ou nulo)! Criação de evento cancelada.';
 	end if;
 
-	if not exists(select 1 from CategoriaEvento where idCategoriaEvento = idCategoriaEvento_p) then
+	if not exists(select 1 from CategoriaEvento where idcategoriaevento = idcategoriaevento_p) then
 		raise exception 'Categoria de evento selecionada não está registrada no sistema! Criação de evento cancelada.';
 	end if;
 
-	if (dataInicio_p <= current_date or dataInicio_p is null) then
+	if (datainicio_p <= current_date or datainicio_p is null) then
 		raise exception 'Data do evento não pode ser anterior a data atual ou no mesmo dia (ou nula)! Criação de evento cancelada.';
 	end if;
 
-	if (dataInicio_p > dataTermino_p or dataTermino_p is null) then
+	if (datainicio_p > dataTermino_p or dataTermino_p is null) then
 		raise exception 'Data de fim do evento não pode ser menor que a data de início (ou nula)! Criação de evento cancelada.';
 	end if;
 
-	if (horarioInicio_p >= horarioTermino_p and dataInicio_p = dataTermino_p) then
+	if (horarioInicio_p >= horarioTermino_p and datainicio_p = dataTermino_p) then
 		raise exception 'Horário de término do evento não pode ser menor ou igual ao horário de início! Criação de evento cancelada.';
 	end if;
 
-	if (numParticipantes_p <= 0 or numParticipantes_p is null) then
+	if (numparticipantes_p <= 0 or numparticipantes_p is null) then
 		raise exception 'Número de participantes deve ser um valor maior que 0! Criação de evento cancelada.';
 	end if;
 
@@ -212,81 +212,81 @@ begin
 		raise exception 'Cliente selecionado não está registrado no sistema! Criação de evento cancelada.';
 	end if;
 
-	if not exists(select 1 from Localizacao where idLocalizacao = idLocalizacao_p) then
+	if not exists(select 1 from Localizacao where idlocalizacao = idlocalizacao_p) then
 		raise exception 'Localização selecionada não está registrada no sistema! Criação de evento cancelada.';
 	end if;
 
-	if exists(select 1 from Evento where idLocalizacao = idLocalizacao_p and status != 'CANCELADO'
-		and (dataInicio + horarioInicio) < (dataTermino_p + horarioTermino_p)
-		and (dataTermino + horarioTermino) > (dataInicio_p + horarioInicio_p)) then
+	if exists(select 1 from Evento where idlocalizacao = idlocalizacao_p and status != 'CANCELADO'
+		and (datainicio + horarioInicio) < (dataTermino_p + horarioTermino_p)
+		and (dataTermino + horarioTermino) > (datainicio_p + horarioInicio_p)) then
 			raise exception 'Existe conflito nos horários! Localização já está reservada nesse período!';
 	end if;
 
-	select capMaxima from Localizacao where idLocalizacao = idLocalizacao_p into v_capMaxima;
+	select capmaxima from Localizacao where idlocalizacao = idlocalizacao_p into v_capmaxima;
 
-	if (numParticipantes_p > v_capMaxima) then
-		raise exception 'Número de participantes excede capacidade máxima da localização com ID %! Criação de evento cancelada.', idLocalizacao_p;
+	if (numparticipantes_p > v_capmaxima) then
+		raise exception 'Número de participantes excede capacidade máxima da localização com ID %! Criação de evento cancelada.', idlocalizacao_p;
 	end if;
 
-	insert into Evento(nomeEvento, idCategoriaEvento, dataInicio, dataTermino, horarioInicio, horarioTermino, 
-		valorIngresso, numParticipantes, status, idCliente, idLocalizacao, descricao)
-	values (nomeEvento_p, idCategoriaEvento_p, dataInicio_p, dataTermino_p, horarioInicio_p, horarioTermino_p,
-		valorIngresso_p, numParticipantes_p, 'ORCAMENTO', idCliente_p, idLocalizacao_p, descricao_p)
-	returning idEvento into v_idEvento;
+	insert into Evento(nomeEvento, idcategoriaevento, datainicio, dataTermino, horarioInicio, horarioTermino, 
+		valoringresso, numparticipantes, status, idCliente, idlocalizacao, descricao)
+	values (nomeEvento_p, idcategoriaevento_p, datainicio_p, dataTermino_p, horarioInicio_p, horarioTermino_p,
+		valoringresso_p, numparticipantes_p, 'ORCAMENTO', idCliente_p, idlocalizacao_p, descricao_p)
+	returning idevento into v_idevento;
 
-	raise notice 'Evento de ID % foi criado com sucesso!', v_idEvento;
+	raise notice 'Evento de ID % foi criado com sucesso!', v_idevento;
 
-	return v_idEvento;
+	return v_idevento;
 	
 end;
 $$
 language plpgsql;
 
 
-create or replace function confirmaEvento(idEvento_p integer) returns void as
+create or replace function confirmaEvento(idevento_p integer) returns void as
 $$
 declare
 	v_statusEvento varchar;
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p) then
-		raise exception 'Evento com ID % não registrado no sistema! Confirmação de evento cancelada!', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p) then
+		raise exception 'Evento com ID % não registrado no sistema! Confirmação de evento cancelada!', idevento_p;
 	end if;
 
-	select status from Evento where idEvento = idEvento_p into v_statusEvento;
+	select status from Evento where idevento = idevento_p into v_statusEvento;
 
 	if (v_statusEvento != 'EM_PREPARACAO') then
 		raise exception 'Evento com status %! Não é possível fazer a confirmação do mesmo.', v_statusEvento;
 	end if;
 
-	update Evento set status = 'CONFIRMADO' where idEvento = idEvento_p;
+	update Evento set status = 'CONFIRMADO' where idevento = idevento_p;
 
-	raise notice 'Status do evento de ID % atualizado para CONFIRMADO com sucesso.', idEvento_p;
+	raise notice 'Status do evento de ID % atualizado para CONFIRMADO com sucesso.', idevento_p;
 	
 end;
 $$
 language plpgsql;
 
 
-create or replace function concluiEvento(idEvento_p integer) returns void as
+create or replace function concluiEvento(idevento_p integer) returns void as
 $$
 declare
 	v_statusEvento varchar;
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p) then
-		raise exception 'Evento com ID % não registrado no sistema! Conclusão de evento cancelada!', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p) then
+		raise exception 'Evento com ID % não registrado no sistema! Conclusão de evento cancelada!', idevento_p;
 	end if;
 
-	select status from Evento where idEvento = idEvento_p into v_statusEvento;
+	select status from Evento where idevento = idevento_p into v_statusEvento;
 
 	if (v_statusEvento != 'CONFIRMADO') then
 		raise exception 'Evento possui status %! Não é possível fazer a conclusão do mesmo.', v_statusEvento;
 	end if;
 
-	update Evento set status = 'REALIZADO' where idEvento = idEvento_p;
+	update Evento set status = 'REALIZADO' where idevento = idevento_p;
 
-	raise notice 'Status do Evento de ID % atualizado para REALIZADO. Relatório gerado.', idEvento_p;
+	raise notice 'Status do Evento de ID % atualizado para REALIZADO. Relatório gerado.', idevento_p;
 	
 end;
 $$
@@ -297,7 +297,7 @@ language plpgsql;
 select * from Evento
 
 insert into Cliente(nome, telefone, email, endereco, cpf_cnpj) values ('Cliente teste', '999999999', 'email@teste.com', 'Rua teste', '11111111111')
-insert into Localizacao(valorLocacao, nome, endereco, capMaxima, area) 
+insert into Localizacao(valorlocacao, nome, endereco, capmaxima, area) 
 	values (2000.00, 'Local Teste', 'Rua2 Teste', 200, 1000)
 insert into CategoriaEvento(nomeCategoria) values ('Categoria Teste')
 
@@ -307,21 +307,21 @@ select concluiEvento(4)
 */
 
 -- não trato a questão de se o valor foi estornado ou não, isso eu deixo com a administração da empresa.
-create or replace function cancelaEvento(idEvento_p integer) returns numeric as
+create or replace function cancelaEvento(idevento_p integer) returns numeric as
 $$
 declare
 	v_valorEstorno numeric(10,2);
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('REALIZADO', 'CANCELADO')) then
-		raise exception 'Evento com ID % já foi realizado/cancelado ou não está registrado no sistema!', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('REALIZADO', 'CANCELADO')) then
+		raise exception 'Evento com ID % já foi realizado/cancelado ou não está registrado no sistema!', idevento_p;
 	end if;
 	
-	select coalesce(sum(valorPago), 0) from Pagamento where idEvento = idEvento_p into v_valorEstorno;
+	select coalesce(sum(valorPago), 0) from Pagamento where idevento = idevento_p into v_valorEstorno;
 
-	update Evento set status = 'CANCELADO' where idEvento = idEvento_p;
+	update Evento set status = 'CANCELADO' where idevento = idevento_p;
 
-	raise notice 'Evento de id % cancelado com sucesso! Valor a ser estornado para o cliente: R$ %.', idEvento_p, v_valorEstorno;
+	raise notice 'Evento de id % cancelado com sucesso! Valor a ser estornado para o cliente: R$ %.', idevento_p, v_valorEstorno;
 
 	return coalesce(v_valorEstorno, 0);
 	
@@ -330,14 +330,14 @@ $$
 language plpgsql;
 
 /*
-update Evento set status = 'REALIZADO' where idEvento = 3
+update Evento set status = 'REALIZADO' where idevento = 3
 select cancelaEvento(3)
 */
 
 -----------------------------------------------------------------
 
-create or replace function criaCronograma(duracaoMinutos_p integer, dataInicio_p timestamp(0),
-	valorCache_p numeric, idApresentador_p integer, idEvento_p integer) returns integer as
+create or replace function criaCronograma(duracaominutos_p integer, datainicio_p timestamp(0),
+	valorcache_p numeric, idApresentador_p integer, idevento_p integer) returns integer as
 $$
 declare
 	v_idCronograma integer;
@@ -345,13 +345,13 @@ declare
 	-- para armazenar o timestamp(0) do final do evento do apresentador que estará 
 	v_dataHTermino timestamp(0); 
 	v_horarioOcupado record;
-	v_nomeApresentador varchar(50);
+	v_nomeapresentador varchar(50);
 	v_eventoDataHoraInicio timestamp(0);
 	v_eventoDataHoraTermino timestamp(0);
 	
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('REALIZADO', 'CANCELADO')) then
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('REALIZADO', 'CANCELADO')) then
 		raise exception 'Evento selecionado já foi realizado/cancelado ou não está registrado no sistema! Criação de cronograma cancelada.';
 	end if;
 
@@ -359,43 +359,43 @@ begin
 		raise exception 'Apresentador selecionado não está registrado no sistema! Criação de cronograma cancelada.';
 	end if;
 
-	if (duracaoMinutos_p <= 0 or duracaoMinutos_p is null) then
+	if (duracaominutos_p <= 0 or duracaominutos_p is null) then
 		raise exception 'O cronograma não pode ter uma duração negativa ou nula! Criação de cronograma cancelada.';
 	end if;
 
-	if (dataInicio_p < now() or dataInicio_p is null) then
+	if (datainicio_p < now() or datainicio_p is null) then
 		raise exception 'Data/Horário de início não pode ser anterior a data/horário atual e deve ser não nula! Criação de cronograma cancelada.';
 	end if;
 
-	if (valorCache_p < 0 or valorCache_p is null) then
+	if (valorcache_p < 0 or valorcache_p is null) then
 		raise exception 'O cachê da palestra deve ser um valor positivo não nulo! Criação de cronograma cancelada.';
 	end if;
 
-	select (dataInicio + horarioInicio), (dataTermino + horarioTermino) from Evento where idEvento = idEvento_p 
+	select (datainicio + horarioInicio), (dataTermino + horarioTermino) from Evento where idevento = idevento_p 
 		into v_eventoDataHoraInicio, v_eventoDataHoraTermino;
 
-	if (dataInicio_p < v_eventoDataHoraInicio 
-		or (dataInicio_p + (duracaoMinutos_p * INTERVAL '1 minute')) > v_eventoDataHoraTermino) then
+	if (datainicio_p < v_eventoDataHoraInicio 
+		or (datainicio_p + (duracaominutos_p * INTERVAL '1 minute')) > v_eventoDataHoraTermino) then
 		raise exception 'Cronograma fora do horário do evento! Criação de cronograma cancelada.';
 	end if;
 
-	v_dataHTermino := dataInicio_p + (duracaoMinutos_p * INTERVAL '1 minute');
+	v_dataHTermino := datainicio_p + (duracaominutos_p * INTERVAL '1 minute');
 
-	select duracaoMinutos, dataInicio from Cronograma where idApresentador = idApresentador_p 
+	select duracaominutos, datainicio from Cronograma where idApresentador = idApresentador_p 
 		-- Novo evento começa antes do existente terminar:
-	  	and dataInicio_p < (dataInicio + (duracaoMinutos * INTERVAL '1 minute'))
+	  	and datainicio_p < (datainicio + (duracaominutos * INTERVAL '1 minute'))
 	  	-- Novo evento termina depois do existente começar:
-	  	and v_dataHTermino > dataInicio into v_horarioOcupado
+	  	and v_dataHTermino > datainicio into v_horarioOcupado
 	limit 1;
 
 	if found then
-		select nome from Apresentador where idApresentador = idApresentador_p into v_nomeApresentador;
+		select nome from Apresentador where idApresentador = idApresentador_p into v_nomeapresentador;
 		raise exception 'Existe um conflito de horários! Apresentador % estará ocupado das % até %! Criação de cronograma cancelada.', 
-			v_nomeApresentador, v_horarioOcupado.dataInicio, (v_horarioOcupado.dataInicio + (v_horarioOcupado.duracaoMinutos * INTERVAL '1 minute'));
+			v_nomeapresentador, v_horarioOcupado.datainicio, (v_horarioOcupado.datainicio + (v_horarioOcupado.duracaominutos * INTERVAL '1 minute'));
 	end if;
 
-	insert into Cronograma(duracaoMinutos, dataInicio, valorCache, idApresentador, idEvento)
-		values (duracaoMinutos_p, dataInicio_p, valorCache_p, idApresentador_p, idEvento_p) returning idCronograma into v_idCronograma;
+	insert into Cronograma(duracaominutos, datainicio, valorcache, idApresentador, idevento)
+		values (duracaominutos_p, datainicio_p, valorcache_p, idApresentador_p, idevento_p) returning idCronograma into v_idCronograma;
 
 	raise notice 'Cronograma de ID % foi criado com sucesso!', v_idCronograma;
 
@@ -491,14 +491,14 @@ language plpgsql;
 
 ------------------------------------------------------------------
 
-create or replace function criarLocalizacao(valorLocacao_p numeric, nome_p varchar, endereco_p varchar, capMaxima_p integer,
-	area_p numeric, infraDisp_p text default '') returns integer as
+create or replace function criarLocalizacao(valorlocacao_p numeric, nome_p varchar, endereco_p varchar, capmaxima_p integer,
+	area_p numeric, infradisp_p text default '') returns integer as
 $$
 declare
-	v_idLocalizacao integer;
+	v_idlocalizacao integer;
 begin
 
-	if (valorLocacao_p <= 0 or valorLocacao_p is null) then
+	if (valorlocacao_p <= 0 or valorlocacao_p is null) then
 		raise exception 'Valor da locação deve ser um valor positivo não nulo! Localização não criada.';
 	end if;
 
@@ -506,7 +506,7 @@ begin
 		raise exception 'Já existe uma localização registrada no sistema com esse endereço! Localização não criada.';
 	end if;
 
-	if (capMaxima_p is null or capMaxima_p <= 0) then
+	if (capmaxima_p is null or capmaxima_p <= 0) then
 		raise exception 'Capacidade máxima deve ser um valor positivo não nulo! Localização não criada.';
 	end if;
 
@@ -514,31 +514,31 @@ begin
 		raise exception 'Area da localização a ser cadastrada deve ser um valor positivo não nulo! Localização não criada.';
 	end if;
 
-	insert into Localizacao(valorLocacao, nome, endereco, capMaxima, area, infraDisp)
-		values (valorLocacao_p, nome_p, endereco_p, capMaxima_p, area_p, infraDisp_p) returning idLocalizacao into v_idLocalizacao;
+	insert into Localizacao(valorlocacao, nome, endereco, capmaxima, area, infradisp)
+		values (valorlocacao_p, nome_p, endereco_p, capmaxima_p, area_p, infradisp_p) returning idlocalizacao into v_idlocalizacao;
 
-	return v_idLocalizacao;
+	return v_idlocalizacao;
 end;
 $$
 language plpgsql;
 
 
-create or replace function deletaLocalizacao(idLocalizacao_p integer) returns void as
+create or replace function deletaLocalizacao(idlocalizacao_p integer) returns void as
 $$
 declare
 begin
 
-	if not exists(select 1 from Localizacao where idLocalizacao = idLocalizacao_p) then
-		raise exception 'Localizacao com ID % não está registrada no sistema! Deleção cancelada.', idLocalizacao_p;
+	if not exists(select 1 from Localizacao where idlocalizacao = idlocalizacao_p) then
+		raise exception 'Localizacao com ID % não está registrada no sistema! Deleção cancelada.', idlocalizacao_p;
 	end if;
 
-	if exists(select 1 from Evento where idLocalizacao = idLocalizacao_p) then
+	if exists(select 1 from Evento where idlocalizacao = idlocalizacao_p) then
 		raise exception 'Localização está associada a um evento! Deleção cancelada.';
 	end if;
 
-	delete from Localizacao where idLocalizacao = idLocalizacao_p;
+	delete from Localizacao where idlocalizacao = idlocalizacao_p;
 
-	raise notice 'Localizacao com ID % deletada com sucesso!', idLocalizacao_p;
+	raise notice 'Localizacao com ID % deletada com sucesso!', idlocalizacao_p;
 	
 end;
 $$
@@ -546,15 +546,15 @@ language plpgsql;
 
 ----------------------------------------------------------------
 
-create or replace function criaOrcamento(idFormaPagamento_p int, validade_p date, valorTotal_p numeric, idEvento_p integer, condicoes_p text default '',
+create or replace function criaOrcamento(idFormaPagamento_p int, validade_p date, valortotal_p numeric, idevento_p integer, condicoes_p text default '',
 	descricao_p text default '') returns integer as
 $$
 declare
 	v_idOrcamento integer;
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('REALIZADO', 'CANCELADO')) then
-		raise exception 'Não existe um evento registrado no banco com o ID % ou o mesmo já foi realizado/cancelado! Criação de orçamento cancelada.', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('REALIZADO', 'CANCELADO')) then
+		raise exception 'Não existe um evento registrado no banco com o ID % ou o mesmo já foi realizado/cancelado! Criação de orçamento cancelada.', idevento_p;
 	end if;
 
 	if not exists(select 1 from FormaPagamento where idFormaPagamento_p = idFormaPagamento) then
@@ -565,16 +565,16 @@ begin
 		raise exception 'Validade não pode ser uma data anterior à de criação do orcamento ou nula! Criação de orçamento cancelada.';
 	end if;
 
-	if (valorTotal_p <= 0 or valorTotal_p is null) then
+	if (valortotal_p <= 0 or valortotal_p is null) then
 		raise exception 'Valor total deve ser um valor positivo não nulo! Criação de orçamento cancelada.';
 	end if;
 
-	if exists(select 1 from Orcamento where idEvento = idEvento_p) then
+	if exists(select 1 from Orcamento where idevento = idevento_p) then
 		raise exception 'Já existe um orçamento ativo para esse evento! Procure alterá-lo em vez de adicionar um novo!';
 	end if;
 
-	insert into Orcamento(idFormaPagamento, validade, valorTotal, condicoes, descricao, idEvento)
-		values(idFormaPagamento_p, validade_p, valorTotal_p, condicoes_p, descricao_p, idEvento_p) returning idOrcamento into v_idOrcamento;
+	insert into Orcamento(idFormaPagamento, validade, valortotal, condicoes, descricao, idevento)
+		values(idFormaPagamento_p, validade_p, valortotal_p, condicoes_p, descricao_p, idevento_p) returning idOrcamento into v_idOrcamento;
 
 	raise notice 'Orcamento de ID % foi criado com sucesso!', v_idOrcamento;
 
@@ -586,7 +586,7 @@ language plpgsql;
 
 
 -- Orçamento não pode ser alterado depois do primeiro pagamento ser feito (por questões de contrato).
-create or replace function alteraOrcamento(idOrcamento_p integer, idFormaPagamento_p integer, validade_p date, valorTotal_p numeric)
+create or replace function alteraOrcamento(idOrcamento_p integer, idFormaPagamento_p integer, validade_p date, valortotal_p numeric)
 	returns void as
 $$
 declare
@@ -604,15 +604,15 @@ begin
 		raise exception 'Validade não pode ser uma data anterior à de criação do orcamento ou nula! Alteração de orçamento cancelada.';
 	end if;
 
-	if (valorTotal_p <= 0 or valorTotal_p is null) then
+	if (valortotal_p <= 0 or valortotal_p is null) then
 		raise exception 'Valor total deve ser um valor positivo não nulo! Alteração de orçamento cancelada.';
 	end if;
 
-	if exists (select 1 from Pagamento p join Orcamento o on o.idEvento = p.idEvento where o.idOrcamento = idOrcamento_p) then
+	if exists (select 1 from Pagamento p join Orcamento o on o.idevento = p.idevento where o.idOrcamento = idOrcamento_p) then
 		raise exception 'Já existem pagamentos atrelados à este orçamento! Por questões de contrato, o orçamento não pode ser alterado!';
 	end if;
 
-	update Orcamento set idFormaPagamento = idFormaPagamento_p, validade = validade_p, valorTotal = valorTotal_p
+	update Orcamento set idFormaPagamento = idFormaPagamento_p, validade = validade_p, valortotal = valortotal_p
 		where idOrcamento = idOrcamento_p;
 
 	raise notice 'Atualização do Orcamento ID % feita com sucesso!', idOrcamento_p;
@@ -625,11 +625,11 @@ language plpgsql;
 
 -- outro cliente que não é dono do evento pode pagar
 create or replace function criaPagamento(valorPago_p numeric, idFormaPagamento_p integer,
-	idEvento_p integer, idCliente_p integer) returns integer as
+	idevento_p integer, idCliente_p integer) returns integer as
 $$
 declare
-	v_valorTotalOrcamento numeric(10,2);
-	v_valorTotalPago numeric(10,2);
+	v_valortotalOrcamento numeric(10,2);
+	v_valortotalPago numeric(10,2);
 	v_idPagamento integer;
 	v_validadeOrcamento date;
 begin
@@ -638,43 +638,43 @@ begin
 		raise exception 'Forma de pagamento selecionada não consta no sistema! Pagamento não criado.';
 	end if;
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('CANCELADO', 'REALIZADO')) then
-		raise exception 'Evento de ID % não consta no sistema ou já foi realizado/cancelado! Pagamento não criado.', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('CANCELADO', 'REALIZADO')) then
+		raise exception 'Evento de ID % não consta no sistema ou já foi realizado/cancelado! Pagamento não criado.', idevento_p;
 	end if;
 
 	if not exists(select 1 from Cliente where idCliente = idCliente_p) then
 		raise exception 'Cliente de ID % não consta no sistema! Pagamento não criado.', idCliente_p;
 	end if;
 
-	if not exists(select 1 from Orcamento where idEvento = idEvento_p) then
-		raise exception 'Ainda não há nenhum orçamento associado ao evento de ID %! Pagamento não criado.', idEvento_p;
+	if not exists(select 1 from Orcamento where idevento = idevento_p) then
+		raise exception 'Ainda não há nenhum orçamento associado ao evento de ID %! Pagamento não criado.', idevento_p;
 	end if;
 
 	if (valorPago_p <= 0 or valorPago_p is null) then
 		raise exception 'Valor pago deve ser um valor positivo não nulo! Pagamento não criado.';
 	end if;
 
-	if not exists(select 1 from Pagamento where idEvento = idEvento_p) then
-		update Evento set status = 'EM_PREPARACAO' where idEvento = idEvento_p and status = 'ORCAMENTO';
+	if not exists(select 1 from Pagamento where idevento = idevento_p) then
+		update Evento set status = 'EM_PREPARACAO' where idevento = idevento_p and status = 'ORCAMENTO';
 	end if;
 
-	select validade from Orcamento where idEvento = idEvento_p into v_validadeOrcamento;
+	select validade from Orcamento where idevento = idevento_p into v_validadeOrcamento;
 
 	if (current_date > v_validadeOrcamento) then
 		raise exception 'Orçamento a ser pago venceu em %! Entrar em contato para renegociação!', v_validadeOrcamento;
 	end if;
 	
 
-	select valorTotal from Orcamento where idEvento = idEvento_p into v_valorTotalOrcamento;
+	select valortotal from Orcamento where idevento = idevento_p into v_valortotalOrcamento;
 
-	select coalesce(sum(valorPago), 0) from Pagamento where idEvento = idEvento_p into v_valorTotalPago;
+	select coalesce(sum(valorPago), 0) from Pagamento where idevento = idevento_p into v_valortotalPago;
 
-	if (valorPago_p + v_valorTotalPago > v_valorTotalOrcamento) then
-		raise exception 'Valor pago pelo cliente é maior que o valor definido no orçamento do evento ID %. Pagamento não criado (informe ao cliente o valor restante a ser pago (R$ %))', idEvento_p, (v_valorTotalOrcamento - v_valorTotalPago);
+	if (valorPago_p + v_valortotalPago > v_valortotalOrcamento) then
+		raise exception 'Valor pago pelo cliente é maior que o valor definido no orçamento do evento ID %. Pagamento não criado (informe ao cliente o valor restante a ser pago (R$ %))', idevento_p, (v_valortotalOrcamento - v_valortotalPago);
 	end if;
 
-	insert into Pagamento(valorTotal, valorPago, idFormaPagamento, idEvento, idCliente)
-		values(v_valorTotalOrcamento, valorPago_p, idFormaPagamento_p, idEvento_p, idCliente_p) returning idPagamento into v_idPagamento;
+	insert into Pagamento(valortotal, valorPago, idFormaPagamento, idevento, idCliente)
+		values(v_valortotalOrcamento, valorPago_p, idFormaPagamento_p, idevento_p, idCliente_p) returning idPagamento into v_idPagamento;
 
 	raise notice 'Pagamento de ID % criado com sucesso!', v_idPagamento;
 
@@ -709,7 +709,7 @@ language plpgsql;
 create or replace function criaParticipante(nome_p varchar, senha_p varchar, telefone_p varchar, email_p varchar default '') returns integer as
 $$
 declare
-	v_idParticipante integer;
+	v_idparticipante integer;
 begin
 
 	if exists (select 1 from participante where email = email_p) then
@@ -717,29 +717,29 @@ begin
 	end if;
 	
 	insert into Participante(nome, senha, telefone, email) values (nome_p, senha_p, telefone_p, email_p)
-		returning idParticipante into v_idParticipante;
+		returning idparticipante into v_idparticipante;
 
-	raise notice 'Participante com ID % criado com sucesso!', v_idParticipante;
+	raise notice 'Participante com ID % criado com sucesso!', v_idparticipante;
 
-	return v_idParticipante;
+	return v_idparticipante;
 	
 end;
 $$
 language plpgsql;
 
 
-create or replace function deletaParticipante(idParticipante_p integer) returns void as
+create or replace function deletaParticipante(idparticipante_p integer) returns void as
 $$
 declare
 begin
 
-	if not exists(select 1 from Participante where idParticipante = idParticipante_p) then
-		raise exception 'Participante com ID % não consta no sistema! Deleção cancelada.', idParticipante_p;
+	if not exists(select 1 from Participante where idparticipante = idparticipante_p) then
+		raise exception 'Participante com ID % não consta no sistema! Deleção cancelada.', idparticipante_p;
 	end if;
 
-	delete from Participante where idParticipante = idParticipante_p;
+	delete from Participante where idparticipante = idparticipante_p;
 
-	raise notice 'Participante com ID % deletado com sucesso!', idParticipante_p;
+	raise notice 'Participante com ID % deletado com sucesso!', idparticipante_p;
 	
 end;
 $$
@@ -747,79 +747,79 @@ language plpgsql;
 
 -----------------------------------------------------
 
--- considero apenas as pessoas que compram o ingresso para verificar capMaxima (independente se a pessoa confirmou ou não)
-create or replace function compraIngresso(idEvento_p integer, idParticipante_p integer) returns integer as
+-- considero apenas as pessoas que compram o ingresso para verificar capmaxima (independente se a pessoa confirmou ou não)
+create or replace function compraIngresso(idevento_p integer, idparticipante_p integer) returns integer as
 $$
 declare
-	v_idIngresso integer;
+	v_idingresso integer;
 	v_qntdPessoas integer;
 	v_numPart integer;
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('REALIZADO', 'CANCELADO', 'ORCAMENTO')) then
-		raise exception 'Evento de ID % não consta no banco de dados ou já foi realizado, foi cancelado, ou está em orçamento!', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('REALIZADO', 'CANCELADO', 'ORCAMENTO')) then
+		raise exception 'Evento de ID % não consta no banco de dados ou já foi realizado, foi cancelado, ou está em orçamento!', idevento_p;
 	end if;
 
-	if not exists(select 1 from Participante where idParticipante = idParticipante_p) then
-		raise exception 'Participante de ID % não consta no banco de dados!', idParticipante_p;
+	if not exists(select 1 from Participante where idparticipante = idparticipante_p) then
+		raise exception 'Participante de ID % não consta no banco de dados!', idparticipante_p;
 	end if;
 
 
-	select numParticipantes from Evento where idEvento = idEvento_p into v_numPart;
+	select numparticipantes from Evento where idevento = idevento_p into v_numPart;
 
-	select count(*) from Ingresso where idEvento = idEvento_p into v_qntdPessoas;
+	select count(*) from Ingresso where idevento = idevento_p into v_qntdPessoas;
 
 	if (v_qntdPessoas >= v_numPart) then
 		raise exception 'Local já atingiu capacidade máxima! Compra de ingresso cancelada!';
 	end if;
 
-	insert into Ingresso(idEvento, idParticipante)
-		values (idEvento_p, idParticipante_p) returning idIngresso into v_idIngresso;
+	insert into Ingresso(idevento, idparticipante)
+		values (idevento_p, idparticipante_p) returning idingresso into v_idingresso;
 
-	raise notice 'Ingresso de ID % criado com sucesso', v_idIngresso;
+	raise notice 'Ingresso de ID % criado com sucesso', v_idingresso;
 
-	return v_idIngresso;
+	return v_idingresso;
 	
 end;
 $$
 language plpgsql;
 
 
-create or replace function confirmaIngresso(idIngresso_p integer) returns void as
+create or replace function confirmaIngresso(idingresso_p integer) returns void as
 $$
 declare
 begin
 
-	if not exists(select 1 from Ingresso where idIngresso = idIngresso_p and confirmacao = false) then
-		raise exception 'Ingresso de ID % não consta no banco de dados ou já foi confirmado! Confirmação cancelada', idIngresso_p;
+	if not exists(select 1 from Ingresso where idingresso = idingresso_p and confirmacao = false) then
+		raise exception 'Ingresso de ID % não consta no banco de dados ou já foi confirmado! Confirmação cancelada', idingresso_p;
 	end if;
 
-	update Ingresso set confirmacao = true where idIngresso = idIngresso_p;
+	update Ingresso set confirmacao = true where idingresso = idingresso_p;
 
-	raise notice 'Ingresso de ID % confirmado com sucesso', idIngresso_p;
+	raise notice 'Ingresso de ID % confirmado com sucesso', idingresso_p;
 	
 end;
 $$
 language plpgsql;
 
 
-create or replace function deletaIngresso(idIngresso_p integer) returns void as
+create or replace function deletaIngresso(idingresso_p integer) returns void as
 $$
 declare
 begin
 
-	if not exists(select 1 from Ingresso where idIngresso = idIngresso_p) then
-		raise exception 'Ingresso de ID % não consta no banco de dados! Deleção cancelada', idIngresso_p;
+	if not exists(select 1 from Ingresso where idingresso = idingresso_p) then
+		raise exception 'Ingresso de ID % não consta no banco de dados! Deleção cancelada', idingresso_p;
 	end if;
 
-	if exists(select 1 from Ingresso i join Evento e on e.idEvento = i.idEvento
-		where i.idIngresso = idIngresso_p and e.status = 'REALIZADO') then
+	if exists(select 1 from Ingresso i join Evento e on e.idevento = i.idevento
+		where i.idingresso = idingresso_p and e.status = 'REALIZADO') then
 		raise exception 'Evento já foi realizado! Ingresso não pode ser excluido.';
 	end if;
 
-	delete from Ingresso where idIngresso = idIngresso_p;
+	delete from Ingresso where idingresso = idingresso_p;
 
-	raise notice 'Ingresso de ID % deletado com sucesso', idIngresso_p;
+	raise notice 'Ingresso de ID % deletado com sucesso', idingresso_p;
 	
 end;
 $$
@@ -830,16 +830,16 @@ language plpgsql;
 create or replace function geraRelatorio() returns trigger as
 $$
 declare
-	v_numParticipantes integer;
+	v_numparticipantes integer;
 	v_idRelatorio integer;
 begin
 	
-	select count(*) from Ingresso where idEvento = new.idEvento and confirmacao = true
-		into v_numParticipantes;
+	select count(*) from Ingresso where idevento = new.idevento and confirmacao = true
+		into v_numparticipantes;
 
 	
-		insert into Relatorio(numRealParticipantes, idEvento) 
-			values (coalesce(v_numParticipantes, 0), new.idEvento) returning idRelatorio into v_idRelatorio;
+		insert into Relatorio(numRealParticipantes, idevento) 
+			values (coalesce(v_numparticipantes, 0), new.idevento) returning idRelatorio into v_idRelatorio;
 		
 		raise notice 'Relatório de ID % criado com sucesso! Ainda é necessário assinar o mesmo.', v_idRelatorio;
 
@@ -931,7 +931,7 @@ language plpgsql;
 
 ------------------------------------------------------------------
 
-create or replace function criaFornecedor(nome_p varchar, telefone_p varchar, cnpj_p varchar, especialidade_p varchar, avalDesempenho_p numeric, 
+create or replace function criaFornecedor(nome_p varchar, telefone_p varchar, cnpj_p varchar, especialidade_p varchar, avaldesempenho_p numeric, 
 	email_p varchar default '') returns integer as
 $$
 declare
@@ -946,12 +946,12 @@ begin
 		raise exception 'CNPJ deve ser um valor válido! Criação Cancelada';
 	end if;
 
-	if (avalDesempenho_p > 10 or avalDesempenho_p < 0) then
+	if (avaldesempenho_p > 10 or avaldesempenho_p < 0) then
 		raise exception 'Nota para desempenho do fornecedor deve ser entre 0 e 10! Criação cancelada.';
 	end if;
 
-	insert into Fornecedor(nome, telefone, cnpj, especialidade, email, avalDesempenho)
-		values (nome_p, telefone_p, cnpj_p, especialidade_p, email_p, avalDesempenho_p) returning idFornecedor into v_idFornecedor;
+	insert into Fornecedor(nome, telefone, cnpj, especialidade, email, avaldesempenho)
+		values (nome_p, telefone_p, cnpj_p, especialidade_p, email_p, avaldesempenho_p) returning idFornecedor into v_idFornecedor;
 
 	raise notice 'Fornecedor de ID % criado com sucesso!', v_idFornecedor;
 
@@ -972,7 +972,7 @@ begin
 	end if;
 
 	if exists(select 1 
-		from ItemServico itser join Evento e on itser.idEvento = e.idEvento 
+		from ItemServico itser join Evento e on itser.idevento = e.idevento 
 		where idFornecedor = idFornecedor_p and e.status not in ('REALIZADO', 'CANCELADO')) then
 			raise exception 'Fornecedor não pode ser desativado pois está associado à um evento ativo! Desativação cancelada.';
 	end if;
@@ -1041,7 +1041,7 @@ begin
 	end if;
 
 	if exists(select 1 
-		from ItemServico itser join Evento e on itser.idEvento = e.idEvento 
+		from ItemServico itser join Evento e on itser.idevento = e.idevento 
 		where idServico = idServico_p and e.status not in ('REALIZADO', 'CANCELADO')) then
 			raise exception 'Serviço não pode ser desativado pois está associado à um evento ativo! Desativação cancelada.';
 	end if;
@@ -1056,15 +1056,15 @@ language plpgsql;
 
 -----------------------------------------------------------
 
-create or replace function criaItemServico(quantContratada_p numeric, valorAcordado_p numeric, idServico_p integer,
-	idFornecedor_p integer, idEvento_p integer) returns integer as
+create or replace function criaItemServico(quantcontratada_p numeric, valoracordado_p numeric, idServico_p integer,
+	idFornecedor_p integer, idevento_p integer) returns integer as
 $$
 declare
 	v_idItemServico integer;
 begin
 
-	if not exists(select 1 from Evento where idEvento = idEvento_p and status not in ('REALIZADO', 'CANCELADO')) then
-		raise exception 'Evento de ID % não está registrado no sistema ou já foi realizado/cancelado! Criação de item serviço cancelada.', idEvento_p;
+	if not exists(select 1 from Evento where idevento = idevento_p and status not in ('REALIZADO', 'CANCELADO')) then
+		raise exception 'Evento de ID % não está registrado no sistema ou já foi realizado/cancelado! Criação de item serviço cancelada.', idevento_p;
 	end if;
 
 	if not exists(select 1 from Servico where idServico = idServico_p and ativo) then
@@ -1075,16 +1075,16 @@ begin
 		raise exception 'Fornecedor de ID % não está registrado no sistema ou está desativado! Criação de item serviço cancelada.', idFornecedor_p;
 	end if;
 
-	if (quantContratada_p <= 0 or quantContratada_p is null) then
+	if (quantcontratada_p <= 0 or quantcontratada_p is null) then
 		raise exception 'Quantidade contratada precisa ser um valor maior que 0! Criação cancelada.';
 	end if;
 
-	if (valorAcordado_p <= 0 or valorAcordado_p is null) then
+	if (valoracordado_p <= 0 or valoracordado_p is null) then
 		raise exception 'Valor acordado precisa ser um valor maior que 0! Criação cancelada.';
 	end if;
 
-	insert into ItemServico(quantContratada, valorAcordado, idServico, idFornecedor, idEvento)
-		values (quantContratada_p, valorAcordado_p, idServico_p, idFornecedor_p, idEvento_p) returning idItemServico into v_idItemServico;
+	insert into ItemServico(quantcontratada, valoracordado, idServico, idFornecedor, idevento)
+		values (quantcontratada_p, valoracordado_p, idServico_p, idFornecedor_p, idevento_p) returning idItemServico into v_idItemServico;
 
 	raise notice 'Item servico de ID % criado com sucesso!', v_idItemServico;
 
@@ -1104,7 +1104,7 @@ begin
 		raise exception 'Não existe item serviço de ID % no banco! Cancelando deleção.', idItemServico_p;
 	end if;
 
-	if exists(select 1 from ItemServico itse join Evento e on e.idEvento = itse.idEvento
+	if exists(select 1 from ItemServico itse join Evento e on e.idevento = itse.idevento
 		where itse.idItemServico = idItemServico_p and e.status = 'REALIZADO') then
 		raise exception 'Evento correspondente a esse item serviço já foi realizado! Cancelando deleção.';
 	end if;
@@ -1118,7 +1118,7 @@ $$
 language plpgsql;
 
 /*
-create or replace function ajustaOrcamentoEvento(idEvento_p integer, delta_p numeric) returns void as
+create or replace function ajustaOrcamentoEvento(idevento_p integer, delta_p numeric) returns void as
 $$
 declare
 	v_idOrcamento integer;
@@ -1127,19 +1127,19 @@ declare
 begin
  
 	-- nada a ajustar
-	if (idEvento_p is null or delta_p is null or delta_p = 0) then
+	if (idevento_p is null or delta_p is null or delta_p = 0) then
 		return;
 	end if;
  
 	-- deleção de Evento em cascata (Evento -> ItemServico/Orcamento/Pagamento): o evento já
 	-- sumiu, então não há orçamento para ajustar (e não faz sentido bloquear a deleção).
-	if not exists(select 1 from Evento where idEvento = idEvento_p) then
+	if not exists(select 1 from Evento where idevento = idevento_p) then
 		return;
 	end if;
  
 	-- "for update" trava a linha do orçamento, duas alterações de itens ao mesmo tempo não se atropelam.
-	select idOrcamento, valorTotal into v_idOrcamento, v_valorAtual
-		from Orcamento where idEvento = idEvento_p for update;
+	select idOrcamento, valortotal into v_idOrcamento, v_valorAtual
+		from Orcamento where idevento = idevento_p for update;
  
 	-- evento ainda não tem orçamento, o ADM define o valor inicial depois, em criaOrcamento.
 	if not found then
@@ -1147,38 +1147,38 @@ begin
 	end if;
  
 	-- mesma regra de alteraOrcamento, após o primeiro pagamento, o orçamento é imutável.
-	if exists(select 1 from Pagamento where idEvento = idEvento_p) then
-		raise exception 'Já existem pagamentos atrelados ao evento de ID %! Por questões de contrato, o orçamento não pode ser alterado, logo o item serviço não pode ser inserido/alterado/removido.', idEvento_p;
+	if exists(select 1 from Pagamento where idevento = idevento_p) then
+		raise exception 'Já existem pagamentos atrelados ao evento de ID %! Por questões de contrato, o orçamento não pode ser alterado, logo o item serviço não pode ser inserido/alterado/removido.', idevento_p;
 	end if;
  
 	v_valorNovo := v_valorAtual + delta_p;
  
 	if (v_valorNovo <= 0) then
-		raise exception 'Essa operação deixaria o orçamento do evento de ID % com valor não positivo (R$ %)! Ajuste o orçamento com alteraOrcamento antes de prosseguir.', idEvento_p, v_valorNovo;
+		raise exception 'Essa operação deixaria o orçamento do evento de ID % com valor não positivo (R$ %)! Ajuste o orçamento com alteraOrcamento antes de prosseguir.', idevento_p, v_valorNovo;
 	end if;
  
-	update Orcamento set valorTotal = v_valorNovo where idOrcamento = v_idOrcamento;
+	update Orcamento set valortotal = v_valorNovo where idOrcamento = v_idOrcamento;
  
-	raise notice 'Orçamento de ID % (evento %) atualizado automaticamente: R$ % -> R$ %.', v_idOrcamento, idEvento_p, v_valorAtual, v_valorNovo;
+	raise notice 'Orçamento de ID % (evento %) atualizado automaticamente: R$ % -> R$ %.', v_idOrcamento, idevento_p, v_valorAtual, v_valorNovo;
  
 end;
 $$
 language plpgsql;
 
--- como o gatilho é AFTER, o valorTotal (coluna gerada) de new/old já está calculado.
+-- como o gatilho é AFTER, o valortotal (coluna gerada) de new/old já está calculado.
 create or replace function atualizaOrcamentoPorItemServico() returns trigger as
 $$
 begin
  
 	if (TG_OP = 'INSERT') then
-		perform ajustaOrcamentoEvento(new.idEvento, new.valorTotal);
+		perform ajustaOrcamentoEvento(new.idevento, new.valortotal);
  
 	elsif (TG_OP = 'DELETE') then
-		perform ajustaOrcamentoEvento(old.idEvento, -old.valorTotal);
+		perform ajustaOrcamentoEvento(old.idevento, -old.valortotal);
  
 	elsif (TG_OP = 'UPDATE') then
 		-- A princípio esse aqui tá certo, não sei se tem alguma condição que não seja isso
-		perform ajustaOrcamentoEvento(new.idEvento, new.valorTotal - old.valorTotal);
+		perform ajustaOrcamentoEvento(new.idevento, new.valortotal - old.valortotal);
 	end if;
  
 	return null;
@@ -1197,9 +1197,9 @@ execute function atualizaOrcamentoPorItemServico();
  
 -- só dispara se mudou algo que afeta o valor (ou o evento). Mudar só o status do item, por exemplo, não mexe no orçamento.
 create trigger trg_orcamentoItemServico_update
-after update of quantContratada, valorAcordado on ItemServico
+after update of quantcontratada, valoracordado on ItemServico
 for each row
-when (old.valorTotal is distinct from new.valorTotal or old.idEvento is distinct from new.idEvento)
+when (old.valortotal is distinct from new.valortotal or old.idevento is distinct from new.idevento)
 execute function atualizaOrcamentoPorItemServico();
  
 create trigger trg_orcamentoItemServico_delete

@@ -1,38 +1,51 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+const { ObjectId } = require('mongodb');
 
 router.get('/', async (req, res) => {
     try {
-        const query = 'SELECT * FROM apresentador ORDER BY nome;';
-        const resultado = await db.query(query);
-        return res.status(200).json({ sucesso: true, apresentadores: resultado.rows });
+        const database = await db.getDb();
+        const apresentadores = await database.collection('apresentadores')
+            .find()
+            .sort({ nome: 1 })
+            .toArray();
+
+        // mapear id
+        const formatados = apresentadores.map(ap => ({
+            ...ap,
+            idapresentador: ap._id.toString()
+        }));
+
+        return res.status(200).json({ sucesso: true, apresentadores: formatados });
     } catch (e) {
         console.error("Erro ao listar apresentadores:", e);
         return res.status(500).json({ erro: 'Erro interno ao buscar apresentadores.' });
     }
 });
 
-// Rota POST: /api/apresentadores/criar (Usando SQL direto, sem stored function)
 router.post('/criar', async (req, res) => {
     const { nome, email, telefone } = req.body;
 
     try {
-        const query = 'INSERT INTO apresentador (nome, email, telefone) VALUES ($1, $2, $3) RETURNING idapresentador;';
-        const values = [nome, email, telefone];
+        const database = await db.getDb();
+        const novoApresentador = {
+            nome,
+            email: email || '',
+            telefone
+        };
         
-        const resultado = await db.query(query, values);
-        const idCriado = resultado.rows[0].idapresentador;
+        const resultado = await database.collection('apresentadores').insertOne(novoApresentador);
 
         return res.status(201).json({ 
             sucesso: true, 
             mensagem: 'Apresentador cadastrado com sucesso!',
-            idapresentador: idCriado
+            idapresentador: resultado.insertedId.toString()
         });
 
     } catch (e) {
         console.error("Erro ao criar apresentador:", e);
-        const mensagemErro = e.detail || e.message || 'Erro ao processar o cadastro do apresentador.';
+        const mensagemErro = e.message || 'Erro ao processar o cadastro do apresentador.';
         return res.status(400).json({ sucesso: false, erro: mensagemErro });
     }
 });
@@ -41,10 +54,12 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const query = 'DELETE FROM apresentador WHERE idapresentador = $1;';
-        const resultado = await db.query(query, [id]);
+        const database = await db.getDb();
+        const resultado = await database.collection('apresentadores').deleteOne({ 
+            _id: new ObjectId(id) 
+        });
 
-        if (resultado.rowCount === 0) {
+        if (resultado.deletedCount === 0) {
             return res.status(404).json({ sucesso: false, erro: 'Apresentador não encontrado.' });
         }
 
@@ -55,7 +70,7 @@ router.delete('/:id', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao excluir apresentador:", e);
-        const mensagemErro = e.detail || e.message || 'Não foi possível excluir o apresentador.';
+        const mensagemErro = e.message || 'Não foi possível excluir o apresentador.';
         return res.status(400).json({ sucesso: false, erro: mensagemErro });
     }
 });

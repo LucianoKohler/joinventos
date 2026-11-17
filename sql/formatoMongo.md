@@ -35,7 +35,7 @@
   "telefone": "11111111111",
   "especialidade": "BUFFET",
   "email": "forneceror@buffet.com",
-  "avalDesempenho": 9.5
+  "avaldesempenho": 9.5
 }
 ```
 
@@ -56,12 +56,12 @@
 ```json
 {
   "_id": "ObjectId(...)",
-  "valorLocacao": 1500.00,
+  "valorlocacao": 1500.00,
   "nome": "Local XXX",
   "endereco": "Rua da flor marrom, 500",
-  "capMaxima": 300,
+  "capmaxima": 300,
   "area": 450.5,
-  "infraDisp": "Mesa, Cadeira..."
+  "infradisp": "Mesa, Cadeira..."
 }
 ```
 
@@ -82,16 +82,16 @@
 {
   "_id": "ObjectId(...)",
   "nomeEvento": "Evento XXX",
-  "idCategoriaEvento": "SEMINARIO",
-  "dataInicio": "2026-12-10",
+  "idcategoriaevento": "SEMINARIO",
+  "datainicio": "2026-12-10",
   "dataTermino": "2026-12-10",
   "horarioInicio": "08:00",
   "horarioTermino": "18:00",
-  "valorIngresso": 50.00,
-  "numParticipantes": 150,
+  "valoringresso": 50.00,
+  "numparticipantes": 150,
   "status": "EM_PREPARACAO",
   "idCliente": "ObjectId(id_cliente)",
-  "idLocalizacao": "ObjectId(id_localizacao)",
+  "idlocalizacao": "ObjectId(id_localizacao)",
   "descricao": "Muita resenha e cerveja.",
   
   // ItemServico
@@ -99,8 +99,8 @@
     {
       "idServico": "ObjectId(...)",
       "nomeservico": "Aluguel de Projetor",
-      "quantContratada": 1,
-      "valorAcordado": 300.00,
+      "quantcontratada": 1,
+      "valoracordado": 300.00,
       "status": "CONTRATADO"
     }
   ],
@@ -108,16 +108,16 @@
   // Cronograma
   "cronograma": [
     {
-      "duracaoMinutos": 60,
-      "dataInicio": "2026-12-10T09:00:00",
-      "valorCache": 500.00,
+      "duracaominutos": 60,
+      "datainicio": "2026-12-10T09:00:00",
+      "valorcache": 500.00,
       "nomeapresentador": "Palestrante XXX"
     }
   ],
 
   // Orcamento
   "orcamento": {
-    "valorTotal": 2300.00,
+    "valortotal": 2300.00,
     "validade": "2026-11-30",
     "condicoes": "50% de entrada",
     "descricao": "Orçamento inicial"
@@ -139,8 +139,8 @@
   // Ingresso
   "ingressos": [
     {
-      "idIngresso": "ObjectId(...)",
-      "idParticipante": "ObjectId(id_participante)",
+      "idingresso": "ObjectId(...)",
+      "idparticipante": "ObjectId(id_participante)",
       "confirmacao": false
     }
   ]

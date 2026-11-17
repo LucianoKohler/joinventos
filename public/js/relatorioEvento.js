@@ -1,10 +1,10 @@
-let idEvento = null;
+let idevento = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    idEvento = params.get('idevento');
+    idevento = params.get('idevento');
 
-    if (!idEvento) {
+    if (!idevento) {
         alert("Nenhum evento especificado.");
         window.location.href = './homeCliente.html';
         return;
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function carregaRelatorio() {
     try {
-        const resposta = await fetch(`http://localhost:3000/api/relatorios/evento/${idEvento}`);
+        const resposta = await fetch(`http://localhost:3000/api/relatorios/evento/${idevento}`);
         const resultado = await resposta.json();
 
         if (resposta.ok) {
@@ -27,7 +27,7 @@ async function carregaRelatorio() {
             document.getElementById("idRelatorio").value = relatorio.idrelatorio;
             document.getElementById("avaliacaoGeral").value = relatorio.avaliacaogeral != null ? relatorio.avaliacaogeral : '';
             document.getElementById("observacoes").value = relatorio.observacoes || '';
-            document.getElementById("nomeEventoTitulo").textContent = `Evento ID: ${idEvento}`;
+            document.getElementById("nomeEventoTitulo").textContent = `Evento ID: ${idevento}`;
 
             const jaAssinado = relatorio.avaliacaogeral != null;
             const status = document.getElementById("statusRelatorioTexto");

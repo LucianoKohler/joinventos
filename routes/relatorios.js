@@ -1,25 +1,50 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const db = require('../db');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
+const { ObjectId } = require('mongodb');
 
-router.get('/evento/:idEvento', async (req, res) => {
-    const { idEvento } = req.params;
+router.get('/evento/:idevento', async (req, res) => {
+    const { idevento } = req.params;
     try {
-        let rel = await pool.query('SELECT * FROM Relatorio WHERE idEvento = $1', [idEvento]);
-        
-        if (rel.rows.length === 0) {
-            rel = await pool.query(
-                'INSERT INTO Relatorio (numRealParticipantes, avaliacaoGeral, observacoes, idEvento) VALUES (0, NULL, \'\', $1) RETURNING *',
-                [idEvento]
+        const database = await db.getDb();
+        const evento = await database.collection('eventos').findOne({ _id: new ObjectId(idevento) });
+
+        if (!evento) {
+            return res.status(404).json({ erro: 'Evento não encontrado.' });
+        }
+
+        if (!evento.relatorio) {
+            evento.relatorio = {
+                idrelatorio: new ObjectId().toString(),
+                numRealParticipantes: 0,
+                avaliacaoGeral: null,
+                observacoes: '',
+                fotos: []
+            };
+            
+            await database.collection('eventos').updateOne(
+                { _id: new ObjectId(idevento) },
+                { $set: { relatorio: evento.relatorio } }
             );
         }
-        
-        const relatorio = rel.rows[0];
-        const fotos = await pool.query('SELECT idFoto, nomeFoto FROM Foto WHERE idRelatorio = $1', [relatorio.idrelatorio]);
-        
-        res.json({ relatorio, fotos: fotos.rows });
+
+        // Formata foto
+        const fotosFormatadas = (evento.relatorio.fotos || []).map((f, index) => ({
+            idFoto: f.idFoto || index.toString(),
+            nomeFoto: f.nomeFoto
+        }));
+
+        res.json({ 
+            relatorio: {
+                idrelatorio: evento.relatorio.idrelatorio || evento.relatorio._id,
+                numRealParticipantes: evento.relatorio.numRealParticipantes,
+                avaliacaoGeral: evento.relatorio.avaliacaoGeral,
+                observacoes: evento.relatorio.observacoes
+            }, 
+            fotos: fotosFormatadas 
+        });
     } catch (err) {
         console.error("Erro ao buscar relatório:", err);
         res.status(500).json({ erro: 'Erro ao carregar dados do relatório.' });
@@ -27,46 +52,76 @@ router.get('/evento/:idEvento', async (req, res) => {
 });
 
 router.post('/assinar', upload.array('fotos'), async (req, res) => {
-    const client = await pool.connect();
     try {
-        await client.query('BEGIN');
-        const { idRelatorio, avaliacaoGeral, observacoes } = req.body;
+        const database = await db.getDb();
+        const { idevento, idRelatorio, avaliacaoGeral, observacoes } = req.body;
 
-        await client.query('SELECT assinaRelatorio($1, $2, $3)', [
-            parseInt(idRelatorio),
-            parseFloat(avaliacaoGeral),
-            observacoes || ''
-        ]);
+        const evento = await database.collection('eventos').findOne({ 
+            $or: [
+                { _id: ObjectId.isValid(idevento) ? new ObjectId(idevento) : null },
+                { "relatorio.idrelatorio": idRelatorio }
+            ]
+        });
 
+        if (!evento) {
+            return res.status(404).json({ sucesso: false, erro: 'Evento/Relatório não encontrado.' });
+        }
+
+        let novasFotos = evento.relatorio?.fotos || [];
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
-                await client.query(
-                    'INSERT INTO Foto (nomeFoto, imagem, idRelatorio) VALUES ($1, $2, $3)',
-                    [file.originalname, file.buffer, parseInt(idRelatorio)]
-                );
+                novasFotos.push({
+                    idFoto: new ObjectId().toString(),
+                    nomeFoto: file.originalname,
+                    imagem: file.buffer
+                });
             }
         }
 
-        await client.query('COMMIT');
+        // atualiza relatorio dentro do evento
+        await database.collection('eventos').updateOne(
+            { _id: evento._id },
+            { 
+                $set: { 
+                    "relatorio.avaliacaoGeral": parseFloat(avaliacaoGeral),
+                    "relatorio.observacoes": observacoes || '',
+                    "relatorio.fotos": novasFotos,
+                    status: 'REALIZADO'
+                } 
+            }
+        );
+
         res.json({ sucesso: true, mensagem: 'Relatório assinado e fotos salvas com sucesso!' });
     } catch (e) {
-        await client.query('ROLLBACK');
         console.error("Erro ao assinar relatório:", e);
         res.status(400).json({ erro: e.message });
     }
 });
 
+
 router.get('/foto/:idFoto', async (req, res) => {
     try {
         const { idFoto } = req.params;
-        const result = await pool.query('SELECT imagem FROM Foto WHERE idFoto = $1', [idFoto]);
-        
-        if (result.rows.length === 0) {
+        const database = await db.getDb();
+
+        const evento = await database.collection('eventos').findOne({
+            "relatorio.fotos.idFoto": idFoto
+        });
+
+        if (!evento || !evento.relatorio || !evento.relatorio.fotos) {
             return res.status(404).send('Foto não encontrada.');
         }
 
+        const fotoEncontrada = evento.relatorio.fotos.find(f => f.idFoto === idFoto);
+
+        if (!fotoEncontrada || !fotoEncontrada.imagem) {
+            return res.status(404).send('Foto não encontrada.');
+        }
+
+        const bufferImg = fotoEncontrada.imagem.buffer || fotoEncontrada.imagem;
+
         res.setHeader('Content-Type', 'image/jpeg');
-        res.send(result.rows[0].imagem);
+        res.send(Buffer.from(bufferImg));
     } catch (e) {
         console.error("Erro ao carregar foto:", e);
         res.status(500).send('Erro ao carregar imagem.');

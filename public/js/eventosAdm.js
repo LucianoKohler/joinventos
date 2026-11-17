@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await carregaEventos();
 });
 
-async function confirmarEvento(idEvento) {
+async function confirmarEvento(idevento) {
     if (!confirm("Tem certeza que deseja confirmar este evento?")) {
         return;
     }
@@ -21,7 +21,7 @@ async function confirmarEvento(idEvento) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ idEvento: parseInt(idEvento) })
+            body: JSON.stringify({ idevento: parseInt(idevento) })
         });
 
         const resultado = await resposta.json();
@@ -89,8 +89,8 @@ async function carregaEventos() {
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div>
-                            <button onclick="confirmarEvento(${evento.idevento})" class="w-[95%]! verde" ${confirmarDisabled}>${textoConfirmar}</button>
-                            <button onclick="cancelarEvento(${evento.idevento})" class="w-[95%]! vermelho" ${cancelarDisabled}>${textoCancelar}</button>
+                            <button onclick="confirmarEvento('${evento.idevento}')" class="w-[95%]! verde" ${confirmarDisabled}>${textoConfirmar}</button>
+                            <button onclick="cancelarEvento('${evento.idevento}')" class="w-[95%]! vermelho" ${cancelarDisabled}>${textoCancelar}</button>
                         </div>
                     </div>
                 `;
@@ -106,12 +106,12 @@ async function carregaEventos() {
     }
 }
 
-async function cancelarEvento(idEvento) {
+async function cancelarEvento(idevento) {
 
     if (!confirm("Tem certeza de que deseja cancelar este evento?")) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/eventos/cancelar-evento/${idEvento}`, {
+        const res = await fetch(`http://localhost:3000/api/eventos/cancelar-evento/${idevento}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });

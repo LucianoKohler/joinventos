@@ -34,10 +34,10 @@ async function carregarFornecedores() {
                 const statusClasse = forn.ativo ? 'verde' : 'vermelho';
                 
                 const   botaoInativar = forn.ativo 
-                    ? `<button onclick="inativarFornecedor(${forn.idfornecedor})" class="btn-lixeira">
+                    ? `<button onclick="inativarFornecedor('${forn.idfornecedor}')" class="btn-lixeira">
                            <i data-lucide="user-x"></i> Inativar
                        </button>`
-                    : `<button onclick="reativarFornecedor(${forn.idfornecedor})" class="verde">
+                    : `<button onclick="reativarFornecedor('${forn.idfornecedor}')" class="verde">
                            <i data-lucide="user-check" ></i> Reativar
                        </button>`
 

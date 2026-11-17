@@ -58,7 +58,7 @@ async function carregaMeusEventos(idCliente) {
 
                 let botaoRelatorioHTML = '';
                 if (dataEvento < hoje) {
-                    botaoRelatorioHTML = `<button onclick="gerarRelatorio(${evento.idevento})" class="btn-relatorio">Gerar Relatório</button>`;
+                    botaoRelatorioHTML = `<button onclick="gerarRelatorio('${evento.idevento}')" class="btn-relatorio">Gerar Relatório</button>`;
                 }
 
                 const cardHTML = `
@@ -74,7 +74,7 @@ async function carregaMeusEventos(idCliente) {
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div>
-                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
+                            <button onclick="verDetalhes('${evento.idevento}')" class="btn-detalhes">Ver Evento</button>
                             ${botaoRelatorioHTML}
                         </div>
                     </div>
@@ -140,7 +140,7 @@ async function carregaTodosEventos(idCliente) {
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div>
-                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
+                            <button onclick="verDetalhes('${evento.idevento}')" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
                 `;
@@ -156,10 +156,10 @@ async function carregaTodosEventos(idCliente) {
     }
 }
 
-function verDetalhes(idEvento) {
-    window.location.href = "./eventoCliente.html?idevento=" + idEvento;
+function verDetalhes(idevento) {
+    window.location.href = "./eventoCliente.html?idevento=" + idevento;
 }
 
-function gerarRelatorio(idEvento) {
-    window.location.href = "./relatorioEvento.html?idevento=" + idEvento;
+function gerarRelatorio(idevento) {
+    window.location.href = "./relatorioEvento.html?idevento=" + idevento;
 }

@@ -2,17 +2,17 @@ let temIngresso = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const idEvento = params.get('idevento');
-    const idParticipante = localStorage.getItem('token');
+    const idevento = params.get('idevento');
+    const idparticipante = localStorage.getItem('token');
 
-    if (!idEvento) {
+    if (!idevento) {
         alert("ID do evento não informado!");
         window.location.href = './homeParticipante.html';
         return;
     }
 
     try {
-        const url = `http://localhost:3000/api/eventos/${idEvento}?idparticipante=${idParticipante}`;
+        const url = `http://localhost:3000/api/eventos/${idevento}?idparticipante=${idparticipante}`;
 
         const resposta = await fetch(url);
         const dados = await resposta.json();
@@ -21,17 +21,17 @@ if (resposta.ok) {
             const evento = dados.evento;
             temIngresso = evento.idingresso || null;
 
-            document.getElementById("nomeEvento").innerText = evento.nome_evento;
+            document.getElementById("nomeEvento").innerText = evento.nomeevento;
             document.getElementById("categoriaEvento").innerText = evento.categoria || 'Geral';
             document.getElementById("descricaoEvento").innerText = evento.descricao || 'Nenhuma descrição informada.';
-            document.getElementById("dataInicio").innerText = formatarData(evento.datainicio);
+            document.getElementById("datainicio").innerText = formatarData(evento.datainicio);
             document.getElementById("dataTermino").innerText = formatarData(evento.datatermino);
             document.getElementById("horarioInicio").innerText = evento.horarioinicio || '';
             document.getElementById("horarioTermino").innerText = evento.horariotermino || '';
             document.getElementById("nomeLocal").innerText = evento.nome_local || 'Local a definir';
             document.getElementById("enderecoLocal").innerText = evento.endereco_local || '';
             document.getElementById("infraLocal").innerText = evento.infradisp || 'Não informada';
-            document.getElementById("valorIngresso").innerText = `R$ ${Number(evento.valoringresso).toFixed(2)}`;
+            document.getElementById("valoringresso").innerText = `R$ ${Number(evento.valoringresso).toFixed(2)}`;
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
 

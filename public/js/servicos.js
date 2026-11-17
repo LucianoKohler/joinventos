@@ -39,7 +39,7 @@ async function carregarServicos() {
                             <p><strong>Valor Unitário:</strong> R$ ${Number(serv.valorunit).toFixed(2)}</p>
                             <p><strong>Categoria:</strong> ${serv.nomecategoriaservico || 'Não informado'}</p>
                         </div>
-                        <button onclick="deletarServico(${serv.idservico})" class="btn-lixeira" title="Excluir Serviço">
+                        <button onclick="deletarServico('${serv.idservico}')" class="btn-lixeira" title="Excluir Serviço">
                             <i data-lucide="trash-2"></i>
                         </button>
                     </div>

@@ -1,24 +1,24 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const idParticipante = localStorage.getItem('token');
+    const idparticipante = localStorage.getItem('token');
 
-    if (!idParticipante) {
+    if (!idparticipante) {
         alert("Sessão expirada ou acesso negado. Faça login novamente.");
         window.location.href = './login.html';
         return;
     }
 
     await Promise.all([
-        carregaMeusEventos(idParticipante),
-        carregaTodosEventos(idParticipante)
+        carregaMeusEventos(idparticipante),
+        carregaTodosEventos(idparticipante)
     ]);
 });
 
-async function carregaMeusEventos(idParticipante) {
+async function carregaMeusEventos(idparticipante) {
     const futuros = document.getElementById("eventosFuturos");
     const passados = document.getElementById("eventosPassados");
 
     try {
-        const resposta = await fetch(`http://localhost:3000/api/eventos/inscritos/${idParticipante}`);
+        const resposta = await fetch(`http://localhost:3000/api/eventos/inscritos/${idparticipante}`);
         const dados = await resposta.json();
 
         if (resposta.ok) {
@@ -76,7 +76,7 @@ async function carregaMeusEventos(idParticipante) {
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div>
-                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
+                            <button onclick="verDetalhes('${evento.idevento}')" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
                 `;
@@ -102,12 +102,12 @@ async function carregaMeusEventos(idParticipante) {
 }
 
 // QUERY 2: todos os eventos 
-async function carregaTodosEventos(idParticipante) {
+async function carregaTodosEventos(idparticipante) {
     const mainContent = document.getElementById("mainContent");
     if (!mainContent) return;
 
     try {
-        const resposta = await fetch(`http://localhost:3000/api/eventos/todos/${idParticipante}`);
+        const resposta = await fetch(`http://localhost:3000/api/eventos/todos/${idparticipante}`);
         const dados = await resposta.json();
 
         if (resposta.ok) {
@@ -161,7 +161,7 @@ eventos.forEach(evento => {
                             <p><strong>Local:</strong> ${evento.local || 'A definir...'}</p>
                         </div>
                         <div>
-                            <button onclick="verDetalhes(${evento.idevento})" class="btn-detalhes">Ver Evento</button>
+                            <button onclick="verDetalhes('${evento.idevento}')" class="btn-detalhes">Ver Evento</button>
                         </div>
                     </div>
                 `;
@@ -177,6 +177,6 @@ eventos.forEach(evento => {
     }
 }
 
-function verDetalhes(idEvento) {
-    window.location.href = "./eventoParticipante.html?idevento=" + idEvento
+function verDetalhes(idevento) {
+    window.location.href = "./eventoParticipante.html?idevento=" + idevento
 }

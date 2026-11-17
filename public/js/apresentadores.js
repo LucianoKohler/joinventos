@@ -37,7 +37,7 @@ async function carregarApresentadores() {
                             <p><strong>E-mail:</strong> ${apresentador.email || 'Não informado'}</p>
                             <p><strong>Telefone:</strong> ${apresentador.telefone || 'Não informado'}</p>
                         </div>
-                        <button onclick="deletarapresentador(${apresentador.idapresentador})" class="btn-lixeira">
+                        <button onclick="deletarApresentador('${apresentador.idapresentador}')" class="btn-lixeira">
                             <i data-lucide="trash-2"></i>
                         </button>
                     </div>

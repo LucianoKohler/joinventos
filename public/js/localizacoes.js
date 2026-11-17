@@ -38,7 +38,7 @@ async function carregarLocalizacoes() {
                             <p><strong>Infraestrutura:</strong> ${loc.infradisp || 'Nenhuma'}</p>
                             <p><strong>Capacidade Máxima:</strong> ${loc.capmaxima} pessoas</p>
                         </div>
-                        <button onclick="deletarLocalizacao(${loc.idlocalizacao})" class="btn-lixeira flex items-center justify-center" title="Excluir Localização">
+                        <button onclick="deletarLocalizacao('${loc.idlocalizacao}')" class="btn-lixeira flex items-center justify-center" title="Excluir Localização">
                             <i data-lucide="trash-2"></i>
                         </button>
                     </div>
@@ -58,11 +58,11 @@ async function carregarLocalizacoes() {
     }
 }
 
-async function deletarLocalizacao(idLocalizacao) {
+async function deletarLocalizacao(idlocalizacao) {
     if (!confirm("Tem certeza de que deseja excluir esta localização?")) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/localizacoes/${idLocalizacao}`, {
+        const res = await fetch(`http://localhost:3000/api/localizacoes/${idlocalizacao}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });

@@ -1,14 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+const { ObjectId } = require('mongodb');
 
-// ROTAS PARA CLIENTES
+// -------------------------
+// CLIENTES
+// -------------------------
+
 router.get('/criados/:idcliente', async (req, res) => {
     const { idcliente } = req.params;
     try {
-        const query = 'SELECT * FROM evento WHERE idcliente = $1 ORDER BY datainicio DESC;';
-        const resultado = await db.query(query, [idcliente]);
-        return res.status(200).json({ sucesso: true, eventos: resultado.rows });
+        const database = await db.getDb();
+        const eventos = await database.collection('eventos')
+            .find({ idcliente: idcliente })
+            .sort({ datainicio: -1 })
+            .toArray();
+
+        const formatados = eventos.map(ev => ({
+            ...ev,
+            idevento: ev._id.toString()
+        }));
+
+        return res.status(200).json({ sucesso: true, eventos: formatados });
     } catch (e) {
         console.error("Erro ao buscar eventos criados:", e);
         return res.status(500).json({ erro: 'Erro interno ao buscar eventos.' });
@@ -16,30 +29,35 @@ router.get('/criados/:idcliente', async (req, res) => {
 });
 
 
-// ROTAS PARA PARTICIPANTES
+// -------------------------
+// PARTICIPANTES
+// -------------------------
 router.get('/inscritos/:idparticipante', async (req, res) => {
     const { idparticipante } = req.params;
 
     try {
-        const query = `
-            SELECT 
-                e.idevento, 
-                e.nomeevento AS nome_evento, 
-                e.descricao, 
-                e.datainicio, 
-                e.idlocalizacao, 
-                i.confirmacao, 
-                i.idingresso
-            FROM ingresso i
-            JOIN evento e ON i.idevento = e.idevento
-            WHERE i.idparticipante = $1;
-        `;
+        const database = await db.getDb();
+        
+        const eventos = await database.collection('eventos').find({
+            "ingressos.idparticipante": idparticipante
+        }).toArray();
 
-        const resultado = await db.query(query, [idparticipante]);
+        const formatados = eventos.map(ev => {
+            const ingressoDoParticipante = ev.ingressos.find(i => i.idparticipante === idparticipante);
+            return {
+                idevento: ev._id.toString(),
+                nome_evento: ev.nomeevento,
+                descricao: ev.descricao,
+                datainicio: ev.datainicio,
+                idlocalizacao: ev.idlocalizacao,
+                confirmacao: ingressoDoParticipante ? ingressoDoParticipante.confirmacao : false,
+                idingresso: ingressoDoParticipante ? ingressoDoParticipante.idingresso : null
+            };
+        });
 
         return res.status(200).json({
             sucesso: true,
-            eventos: resultado.rows
+            eventos: formatados
         });
 
     } catch (e) {
@@ -50,24 +68,37 @@ router.get('/inscritos/:idparticipante', async (req, res) => {
 
 router.get('/todos', async (req, res) => {
     try {
-        const query = `
-            SELECT 
-                e.idevento, 
-                e.nomeevento AS nome_evento, 
-                e.descricao, 
-                e.datainicio AS data_evento, 
-                l.nome AS local,
-                e.status
-            FROM evento e
-            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
-            ORDER BY e.datainicio;
-        `;
+        const database = await db.getDb();
+        
+        const eventos = await database.collection('eventos').aggregate([
+            {
+                $lookup: {
+                    from: "localizacoes",
+                    localField: "idlocalizacao",
+                    foreignField: "_id",
+                    as: "localObj"
+                }
+            },
+            {
+                $addFields: {
+                    local: { $arrayElemAt: ["$localObj.nome", 0] }
+                }
+            },
+            { $sort: { datainicio: 1 } }
+        ]).toArray();
 
-        const resultado = await db.query(query);
+        const formatados = eventos.map(ev => ({
+            idevento: ev._id.toString(),
+            nome_evento: ev.nomeevento,
+            descricao: ev.descricao,
+            data_evento: ev.datainicio,
+            local: ev.local || 'Local a definir',
+            status: ev.status
+        }));
 
         return res.status(200).json({
             sucesso: true,
-            eventos: resultado.rows
+            eventos: formatados
         });
 
     } catch (e) {
@@ -80,25 +111,40 @@ router.get('/todos/:idparticipante', async (req, res) => {
     const { idparticipante } = req.params;
 
     try {
-        const query = `
-            SELECT 
-                e.idevento, 
-                e.nomeevento AS nome_evento, 
-                e.descricao, 
-                e.datainicio AS data_evento, 
-                l.nome AS local, 
-                i.confirmacao,
-                i.idingresso
-            FROM evento e
-            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
-            LEFT JOIN ingresso i ON e.idevento = i.idevento AND i.idparticipante = $1;
-        `;
+        const database = await db.getDb();
+        
+        const eventos = await database.collection('eventos').aggregate([
+            {
+                $lookup: {
+                    from: "localizacoes",
+                    localField: "idlocalizacao",
+                    foreignField: "_id",
+                    as: "localObj"
+                }
+            },
+            {
+                $addFields: {
+                    local: { $arrayElemAt: ["$localObj.nome", 0] }
+                }
+            }
+        ]).toArray();
 
-        const resultado = await db.query(query, [idparticipante]);
+        const formatados = eventos.map(ev => {
+            const ingresso = ev.ingressos ? ev.ingressos.find(i => i.idparticipante === idparticipante) : null;
+            return {
+                idevento: ev._id.toString(),
+                nome_evento: ev.nomeevento,
+                descricao: ev.descricao,
+                data_evento: ev.datainicio,
+                local: ev.local || 'Local a definir',
+                confirmacao: ingresso ? ingresso.confirmacao : null,
+                idingresso: ingresso ? ingresso.idingresso : null
+            };
+        });
 
         return res.status(200).json({
             sucesso: true,
-            eventos: resultado.rows
+            eventos: formatados
         });
 
     } catch (e) {
@@ -107,21 +153,40 @@ router.get('/todos/:idparticipante', async (req, res) => {
     }
 });
 
+// -------------------------
+// INGRESSOS
+// -------------------------
+
 router.post('/entrarEvento/', async (req, res) => {
     const { idevento, idparticipante } = req.body;
 
     try {
-        const query = 'SELECT compraIngresso($1, $2) AS sucesso;';
-        const resultado = await db.query(query, [idevento, idparticipante]);
+        const database = await db.getDb();
         
-        const ok = resultado.rows[0].sucesso;
-
-        if (ok) {
-            return res.status(200).json({ sucesso: true, mensagem: 'Entrou no evento com sucesso!' });
-        } else {
-            return res.status(400).json({ sucesso: false, mensagem: 'Não foi possível entrar no evento.' });
+        const evento = await database.collection('eventos').findOne({ _id: new ObjectId(idevento) });
+        if (!evento) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Evento não encontrado.' });
         }
 
+        const ingressos = evento.ingressos || [];
+        const jaTem = ingressos.some(i => i.idparticipante === idparticipante);
+
+        if (jaTem) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Participante já está inscrito neste evento.' });
+        }
+
+        const novoIngresso = {
+            idingresso: new ObjectId().toString(),
+            idparticipante: idparticipante,
+            confirmacao: false
+        };
+
+        await database.collection('eventos').updateOne(
+            { _id: new ObjectId(idevento) },
+            { $push: { ingressos: novoIngresso } }
+        );
+
+        return res.status(200).json({ sucesso: true, mensagem: 'Entrou no evento com sucesso!' });
     } catch (e) {
         console.error("Erro ao entrar no evento:", e);
         return res.status(500).json({ erro: 'Erro interno ao processar confirmação.' });
@@ -132,10 +197,17 @@ router.post('/confirmar/:idingresso', async (req, res) => {
     const { idingresso } = req.params;
 
     try {
-        const query = 'SELECT confirmaingresso($1);';
-        const resultado = await db.query(query, [idingresso]);
+        const database = await db.getDb();
+        const resultado = await database.collection('eventos').updateOne(
+            { "ingressos.idingresso": idingresso },
+            { $set: { "ingressos.$.confirmacao": true } }
+        );
+
+        if (resultado.matchedCount === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Ingresso não encontrado' });
+        }
+
         return res.status(200).json({ sucesso: true, mensagem: 'Presença confirmada com sucesso!' });
-        
     } catch (e) {
         console.error("Erro ao confirmar presença:", e);
         return res.status(400).json({ sucesso: false, mensagem: 'Erro ao confirmar presença' });
@@ -146,74 +218,76 @@ router.delete('/cancelar/:idingresso', async (req, res) => {
     const { idingresso } = req.params;
 
     try {
-        const query = 'SELECT deletaingresso($1);';
-        const resultado = await db.query(query, [idingresso]);
-        return res.status(200).json({ sucesso: true, mensagem: 'Ingresso cancelado com sucesso!' });
+        const database = await db.getDb();
+        const resultado = await database.collection('eventos').updateOne(
+            { "ingressos.idingresso": idingresso },
+            { $pull: { ingressos: { idingresso: idingresso } } }
+        );
 
+        if (resultado.modifiedCount === 0) {
+            return res.status(400).json({ sucesso: false, mensagem: 'Ingresso não encontrado' });
+        }
+
+        return res.status(200).json({ sucesso: true, mensagem: 'Ingresso cancelado com sucesso!' });
     } catch (e) {
         console.error("Erro ao cancelar ingresso:", e);
         return res.status(400).json({ sucesso: false, mensagem: 'Erro ao cancelar ingresso' });
     }
 });
 
+// -------------------------
+// MOSTRA EVENTO
+// -------------------------
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     let { idparticipante } = req.query;
 
     try {
-        const queryEvento = `
-            SELECT 
-                e.idevento, 
-                e.nomeevento AS nome_evento, 
-                e.descricao, 
-                e.datainicio, 
-                e.datatermino, 
-                e.horarioinicio, 
-                e.horariotermino, 
-                e.valoringresso, 
-                e.numparticipantes, 
-                e.status, 
-                e.idcliente,
-                c.nomecategoria AS categoria,
-                l.nome AS nome_local, 
-                l.endereco AS endereco_local, 
-                l.infradisp,
-                cl.nome AS nome_cliente,
-                i.idingresso,
-                i.confirmacao
-            FROM evento e
-            LEFT JOIN categoriaevento c ON e.idcategoriaevento = c.idcategoriaevento
-            LEFT JOIN localizacao l ON e.idlocalizacao = l.idlocalizacao
-            LEFT JOIN cliente cl ON e.idcliente = cl.idcliente
-            LEFT JOIN ingresso i ON e.idevento = i.idevento AND i.idparticipante = $2
-            WHERE e.idevento = $1;
-        `;
-
-        const resultadoEvento = await db.query(queryEvento, [id, idparticipante]);
+        const database = await db.getDb();
         
-        if (resultadoEvento.rowCount === 0) {
+        const eventoArr = await database.collection('eventos').aggregate([
+            { $match: { _id: new ObjectId(id) } },
+            {
+                $lookup: {
+                    from: "localizacoes",
+                    localField: "idlocalizacao",
+                    foreignField: "_id",
+                    as: "localObj"
+                }
+            },
+            {
+                $lookup: {
+                    from: "clientes",
+                    localField: "idcliente",
+                    foreignField: "_id",
+                    as: "clienteObj"
+                }
+            },
+            {
+                $addFields: {
+                    nome_local: { $arrayElemAt: ["$localObj.nome", 0] },
+                    endereco_local: { $arrayElemAt: ["$localObj.endereco", 0] },
+                    infradisp: { $arrayElemAt: ["$localObj.infradisp", 0] },
+                    nome_cliente: { $arrayElemAt: ["$clienteObj.nome", 0] }
+                }
+            }
+        ]).toArray();
+
+        if (eventoArr.length === 0) {
             return res.status(404).json({ erro: 'Evento não encontrado.' });
         }
 
-        const evento = resultadoEvento.rows[0];
+        const evento = eventoArr[0];
+        evento.idevento = evento._id.toString();
 
-        const queryServicos = `
-            SELECT its.quantcontratada, its.valoracordado, s.descricao AS nomeservico 
-            FROM itemservico its
-            JOIN servico s ON its.idservico = s.idservico
-            WHERE its.idevento = $1;
-        `;
-        const resultadoServicos = await db.query(queryServicos, [id]);
-        evento.servicos = resultadoServicos.rows;
-
-        const queryCronograma = `
-            SELECT cr.duracaominutos, cr.datainicio, cr.valorcache, a.nome AS nomeapresentador 
-            FROM cronograma cr
-            LEFT JOIN apresentador a ON cr.idapresentador = a.idapresentador
-            WHERE cr.idevento = $1;
-        `;
-        const resultadoCronograma = await db.query(queryCronograma, [id]);
-        evento.cronograma = resultadoCronograma.rows;
+        if (idparticipante && evento.ingressos) {
+            const ing = evento.ingressos.find(i => i.idparticipante === idparticipante);
+            if (ing) {
+                evento.idingresso = ing.idingresso;
+                evento.confirmacao = ing.confirmacao;
+            }
+        }
 
         return res.status(200).json({
             sucesso: true,
@@ -226,11 +300,23 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
+// -------------------------
+// MISC
+// -------------------------
 router.get('/categorias/todas', async (req, res) => {
     try {
-        const query = 'SELECT idcategoriaevento, nomecategoria FROM categoriaevento ORDER BY nomecategoria;';
-        const resultado = await db.query(query);
-        return res.status(200).json({ sucesso: true, categorias: resultado.rows });
+        const categorias = [
+            { idcategoriaevento: 'CASAMENTO', nomecategoria: 'CASAMENTO' },
+            { idcategoriaevento: 'ANIVERSARIO', nomecategoria: 'ANIVERSARIO' },
+            { idcategoriaevento: 'FORMATURA', nomecategoria: 'FORMATURA' },
+            { idcategoriaevento: 'SEMINARIO', nomecategoria: 'SEMINARIO' },
+            { idcategoriaevento: 'WORKSHOP', nomecategoria: 'WORKSHOP' },
+            { idcategoriaevento: 'CONGRESSO', nomecategoria: 'CONGRESSO' },
+            { idcategoriaevento: 'CONFRATERNIZACAO', nomecategoria: 'CONFRATERNIZACAO' },
+            { idcategoriaevento: 'OUTRO', nomecategoria: 'OUTRO' }
+        ];
+        return res.status(200).json({ sucesso: true, categorias });
     } catch (e) {
         console.error("Erro ao buscar categorias:", e);
         return res.status(500).json({ erro: 'Erro interno ao buscar categorias.' });
@@ -239,118 +325,81 @@ router.get('/categorias/todas', async (req, res) => {
 
 router.get('/localizacoes/todas', async (req, res) => {
     try {
-        const query = 'SELECT * FROM localizacao ORDER BY nome;';
-        const resultado = await db.query(query);
-        return res.status(200).json({ sucesso: true, localizacoes: resultado.rows });
+        const database = await db.getDb();
+        const localizacoes = await database.collection('localizacoes').find().sort({ nome: 1 }).toArray();
+        const formatadas = localizacoes.map(l => ({
+            ...l,
+            idlocalizacao: l._id.toString()
+        }));
+        return res.status(200).json({ sucesso: true, localizacoes: formatadas });
     } catch (e) {
         console.error("Erro ao buscar localizações:", e);
         return res.status(500).json({ erro: 'Erro interno ao buscar localizações.' });
     }
 });
 
+// -------------------------
+// CRIAÇÃO DE EVENTO
+// -------------------------
 router.post('/criar', async (req, res) => {
     const {
         nomeEvento,
-        idCategoriaEvento,
-        dataInicio,
+        idcategoriaevento,
+        datainicio,
         dataTermino,
         horarioInicio,
         horarioTermino,
-        valorIngresso,
-        numParticipantes,
+        valoringresso,
+        numparticipantes,
         idCliente,
-        idLocalizacao,
+        idlocalizacao,
         descricao,
         servicos,
         cronograma,
         orcamentoInicial
     } = req.body;
 
-    const client = await db.connect();
-
     try {
-        await client.query('BEGIN');
+        const database = await db.getDb();
 
-        // Dados iniciais
-        const queryEvento = `
-            SELECT criaEvento($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) AS idevento;
-        `;
-        const valuesEvento = [
-            nomeEvento,
-            idCategoriaEvento,
-            dataInicio,
-            dataTermino,
-            horarioInicio,
-            horarioTermino,
-            valorIngresso,
-            numParticipantes,
-            idCliente,
-            idLocalizacao,
-            descricao || ''
-        ];
+        const novoEvento = {
+            nomeevento: nomeEvento,
+            idcategoriaevento: idcategoriaevento,
+            datainicio: datainicio,
+            datatermino: dataTermino,
+            horarioinicio: horarioInicio,
+            horariotermino: horarioTermino,
+            valoringresso: parseFloat(valoringresso || 0),
+            numparticipantes: parseInt(numparticipantes || 0),
+            idcliente: idCliente,
+            idlocalizacao: ObjectId.isValid(idlocalizacao) ? new ObjectId(idlocalizacao) : idlocalizacao,
+            descricao: descricao || '',
+            status: 'EM_PREPARACAO',
+            servicos: servicos || [],
+            cronograma: cronograma || [],
+            orcamento: {
+                valortotal: parseFloat(orcamentoInicial || 0),
+                descricao: 'Orçamento inicial gerado automaticamente no cadastro.'
+            },
+            relatorio: {
+                idrelatorio: new ObjectId().toString(),
+                numRealParticipantes: 0,
+                avaliacaoGeral: null,
+                observacoes: '',
+                fotos: []
+            },
+            ingressos: []
+        };
 
-        const resultadoEvento = await client.query(queryEvento, valuesEvento);
-        const idCriado = resultadoEvento.rows[0].idevento;
-
-        // Fornecimentos
-        if (servicos && servicos.length > 0) {
-            for (const serv of servicos) {
-                const queryItem = `
-                    SELECT criaItemServico($1, $2, $3, $4, $5);
-                `;
-                await client.query(queryItem, [
-                    serv.quantContratada,
-                    serv.valorAcordado,
-                    serv.idServico,
-                    serv.idFornecedor,
-                    idCriado
-                ]);
-            }
-        }
-
-        // Cronogramas
-        if (cronograma && cronograma.length > 0) {
-            for (const cron of cronograma) {
-                const queryCron = `
-                    SELECT criaCronograma($1, $2, $3, $4, $5);
-                `;
-                await client.query(queryCron, [
-                    cron.duracaoMinutos,
-                    cron.dataInicio, 
-                    cron.valorCache,
-                    cron.idApresentador || null,
-                    idCriado
-                ]);
-            }
-        }
-
-        // Orçamento
-        if (orcamentoInicial !== undefined && orcamentoInicial !== null && orcamentoInicial !== '') {
-            const queryOrcamento = `
-                SELECT criaOrcamento($1, (current_date + interval '30 days')::date, $2, $3, $4, $5);
-            `;
-            const idFormaPagamentoPadrao = 1; 
-            await client.query(queryOrcamento, [
-                idFormaPagamentoPadrao,
-                orcamentoInicial,
-                idCriado,
-                'Orçamento inicial gerado automaticamente no cadastro.',
-                descricao || ''
-            ]);
-        }
-
-        await client.query('COMMIT');
-        client.release();
+        const resultado = await database.collection('eventos').insertOne(novoEvento);
 
         return res.status(201).json({
             sucesso: true,
-            mensagem: 'Evento, serviços, cronograma e orçamento cadastrados com sucesso!',
-            idevento: idCriado
+            mensagem: 'Evento, serviços, cronograma e orçamento cadastrados com sucesso no MongoDB!',
+            idevento: resultado.insertedId.toString()
         });
 
     } catch (e) {
-        await client.query('ROLLBACK');
-        client.release();
         console.error("Erro no cadastro completo do evento:", e);
         return res.status(400).json({ sucesso: false, erro: e.message || 'Erro ao processar criação do evento.' });
     }
@@ -360,9 +409,16 @@ router.delete('/cancelar-evento/:idevento', async (req, res) => {
     const { idevento } = req.params;
 
     try {
-        const query = 'SELECT cancelaEvento($1) AS resultado;';
-        const resultado = await db.query(query, [idevento]);
-        
+        const database = await db.getDb();
+        const resultado = await database.collection('eventos').updateOne(
+            { _id: new ObjectId(idevento) },
+            { $set: { status: 'CANCELADO' } }
+        );
+
+        if (resultado.matchedCount === 0) {
+            return res.status(404).json({ sucesso: false, erro: 'Evento não encontrado.' });
+        }
+
         return res.status(200).json({ 
             sucesso: true, 
             mensagem: 'Evento cancelado com sucesso!' 
@@ -370,20 +426,27 @@ router.delete('/cancelar-evento/:idevento', async (req, res) => {
 
     } catch (e) {
         console.error("Erro ao cancelar evento:", e);
-        const mensagemErro = e.message || 'Não foi possível cancelar o evento.';
-        return res.status(400).json({ sucesso: false, erro: mensagemErro });
+        return res.status(400).json({ sucesso: false, erro: e.message || 'Não foi possível cancelar o evento.' });
     }
 });
 
 router.post('/confirmar', async (req, res) => {
     try {
-        const { idEvento } = req.body;
+        const { idevento } = req.body;
 
-        if (!idEvento) {
+        if (!idevento) {
             return res.status(400).json({ erro: 'ID do evento não fornecido.' });
         }
 
-        await db.query('SELECT confirmaEvento($1)', [parseInt(idEvento)]);
+        const database = await db.getDb();
+        const resultado = await database.collection('eventos').updateOne(
+            { _id: new ObjectId(idevento) },
+            { $set: { status: 'CONFIRMADO' } }
+        );
+
+        if (resultado.matchedCount === 0) {
+            return res.status(404).json({ sucesso: false, erro: 'Evento não encontrado.' });
+        }
 
         res.json({ 
             sucesso: true, 
@@ -391,7 +454,6 @@ router.post('/confirmar', async (req, res) => {
         });
     } catch (err) {
         console.error("Erro ao confirmar evento:", err);
-        
         res.status(400).json({ erro: err.message });
     }
 });

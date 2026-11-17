@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const dadosLocal = {
-            valorLocacao: parseFloat(document.getElementById("valorLocacao").value),
+            valorlocacao: parseFloat(document.getElementById("valorlocacao").value),
             nome: document.getElementById("nome").value,
             endereco: document.getElementById("endereco").value,
-            capMaxima: parseInt(document.getElementById("capMaxima").value),
+            capmaxima: parseInt(document.getElementById("capmaxima").value),
             area: parseFloat(document.getElementById("area").value),
-            infraDisp: document.getElementById("infraDisp").value
+            infradisp: document.getElementById("infradisp").value
         };
 
         console.log(dadosLocal);

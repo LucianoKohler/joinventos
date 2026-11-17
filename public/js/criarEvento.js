@@ -40,7 +40,7 @@ async function carregaDados() {
         // Categorias
         if (resCat.ok) {
             const dataCat = await resCat.json();
-            const selectCat = document.getElementById("idCategoriaEvento");
+            const selectCat = document.getElementById("idcategoriaevento");
             (dataCat.categorias || []).forEach(c => {
                 const opt = document.createElement("option");
                 opt.value = c.idcategoriaevento;
@@ -52,7 +52,7 @@ async function carregaDados() {
         // Localizações
         if (resLoc.ok) {
             const dataLoc = await resLoc.json();
-            const selectLoc = document.getElementById("idLocalizacao");
+            const selectLoc = document.getElementById("idlocalizacao");
             (dataLoc.localizacoes || []).forEach(l => {
                 const opt = document.createElement("option");
                 opt.value = l.idlocalizacao;
@@ -94,14 +94,14 @@ function configuraTela() {
         if (passo === 1) {
             dados.dadosIniciais = {
                 nomeEvento: document.getElementById("nomeEvento").value,
-                idCategoriaEvento: parseInt(document.getElementById("idCategoriaEvento").value),
-                dataInicio: document.getElementById("dataInicio").value,
+                idcategoriaevento: parseInt(document.getElementById("idcategoriaevento").value),
+                datainicio: document.getElementById("datainicio").value,
                 dataTermino: document.getElementById("dataTermino").value,
                 horarioInicio: document.getElementById("horarioInicio").value,
                 horarioTermino: document.getElementById("horarioTermino").value,
-                valorIngresso: parseFloat(document.getElementById("valorIngresso").value),
-                numParticipantes: parseInt(document.getElementById("numParticipantes").value),
-                idLocalizacao: parseInt(document.getElementById("idLocalizacao").value),
+                valoringresso: parseFloat(document.getElementById("valoringresso").value),
+                numparticipantes: parseInt(document.getElementById("numparticipantes").value),
+                idlocalizacao: parseInt(document.getElementById("idlocalizacao").value),
                 descricao: document.getElementById("descricao").value
             };
 
@@ -226,8 +226,8 @@ function coletaServicos() {
             dados.servicos.push({
                 idServico: parseInt(selServico.value),
                 idFornecedor: selFornecedor.value ? parseInt(selFornecedor.value) : null,
-                quantContratada: parseFloat(inputQuant.value),
-                valorAcordado: parseFloat(inputValor.value)
+                quantcontratada: parseFloat(inputQuant.value),
+                valoracordado: parseFloat(inputValor.value)
             });
         }
     });
@@ -282,13 +282,13 @@ function coletaCronograma() {
     const linhas = document.querySelectorAll("#cronogramaContainer > div");
 
     linhas.forEach(linha => {
-        const inputDataInicio = linha.querySelector(".input-data-inicio");
+        const inputdatainicio = linha.querySelector(".input-data-inicio");
         const inputDuracao = linha.querySelector(".input-duracao");
         const inputCache = linha.querySelector(".input-cache");
         const selectApresentador = linha.querySelector(".select-apresentador");
 
-        if (inputDataInicio && inputDataInicio.value && inputDuracao && inputCache) {
-            let dataValor = inputDataInicio.value.replace('T', ' ');
+        if (inputdatainicio && inputdatainicio.value && inputDuracao && inputCache) {
+            let dataValor = inputdatainicio.value.replace('T', ' ');
             if (dataValor.length === 16) { 
                 dataValor += ':00';
             }
@@ -296,9 +296,9 @@ function coletaCronograma() {
             const idApresVal = selectApresentador.value ? parseInt(selectApresentador.value) : null;
 
             dados.cronograma.push({
-                dataInicio: dataValor,
-                duracaoMinutos: parseInt(inputDuracao.value),
-                valorCache: parseFloat(inputCache.value),
+                datainicio: dataValor,
+                duracaominutos: parseInt(inputDuracao.value),
+                valorcache: parseFloat(inputCache.value),
                 idApresentador: idApresVal
             });
         }
@@ -310,13 +310,13 @@ function coletaCronograma() {
     const linhas = document.querySelectorAll("#cronogramaContainer > div");
 
     linhas.forEach(linha => {
-        const inputDataInicio = linha.querySelector(".input-data-inicio");
+        const inputdatainicio = linha.querySelector(".input-data-inicio");
         const inputDuracao = linha.querySelector(".input-duracao");
         const inputCache = linha.querySelector(".input-cache");
         const selectApresentador = linha.querySelector(".select-apresentador");
 
-        if (inputDataInicio && inputDataInicio.value && inputDuracao && inputCache) {
-            let dataValor = inputDataInicio.value.replace('T', ' ');
+        if (inputdatainicio && inputdatainicio.value && inputDuracao && inputCache) {
+            let dataValor = inputdatainicio.value.replace('T', ' ');
             if (dataValor.length === 16) { 
                 dataValor += ':00';
             }
@@ -324,9 +324,9 @@ function coletaCronograma() {
             const idApresVal = selectApresentador.value ? parseInt(selectApresentador.value) : null;
 
             dados.cronograma.push({
-                dataInicio: dataValor,
-                duracaoMinutos: parseInt(inputDuracao.value),
-                valorCache: parseFloat(inputCache.value),
+                datainicio: dataValor,
+                duracaominutos: parseInt(inputDuracao.value),
+                valorcache: parseFloat(inputCache.value),
                 idApresentador: idApresVal
             });
         }

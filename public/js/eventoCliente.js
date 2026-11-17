@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const idEvento = params.get('idevento');
+    const idevento = params.get('idevento');
     const idCliente = localStorage.getItem('token');
 
-    if (!idEvento) {
+    if (!idevento) {
         alert("ID do evento não informado!");
         window.location.href = './homeCliente.html';
         return;
@@ -16,23 +16,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const resposta = await fetch(`http://localhost:3000/api/eventos/${idEvento}`);
+        const resposta = await fetch(`http://localhost:3000/api/eventos/${idevento}`);
         const dados = await resposta.json();
 
         if (resposta.ok) {
             const evento = dados.evento;
 
-            document.getElementById("nomeEvento").innerText = evento.nome_evento;
+            document.getElementById("nomeEvento").innerText = evento.nomeevento;
             document.getElementById("categoriaEvento").innerText = evento.categoria || 'Geral';
             document.getElementById("descricaoEvento").innerText = evento.descricao || 'Nenhuma descrição informada.';
-            document.getElementById("dataInicio").innerText = formatarData(evento.datainicio);
+            document.getElementById("datainicio").innerText = formatarData(evento.datainicio);
             document.getElementById("dataTermino").innerText = formatarData(evento.datatermino);
             document.getElementById("horarioInicio").innerText = evento.horarioinicio || '';
             document.getElementById("horarioTermino").innerText = evento.horariotermino || '';
             document.getElementById("nomeLocal").innerText = evento.nome_local || 'Local a definir';
             document.getElementById("enderecoLocal").innerText = evento.endereco_local || '';
             document.getElementById("infraLocal").innerText = evento.infradisp || 'Não informada';
-            document.getElementById("valorIngresso").innerText = `R$ ${Number(evento.valoringresso).toFixed(2)}`;
+            document.getElementById("valoringresso").innerText = `R$ ${Number(evento.valoringresso).toFixed(2)}`;
             document.getElementById("statusEvento").innerText = evento.status;
             document.getElementById("nomeOrganizador").innerText = evento.nome_cliente || 'Organização Interna';
 
@@ -118,18 +118,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function gerarRelatorio() {
     const params = new URLSearchParams(window.location.search);
-    const idEvento = params.get('idevento');
-    window.location.href = `./relatorioEvento.html?idevento=${idEvento}`;
+    const idevento = params.get('idevento');
+    window.location.href = `./relatorioEvento.html?idevento=${idevento}`;
 }
 
 async function cancelarEvento() {
     const params = new URLSearchParams(window.location.search);
-    const idEvento = params.get('idevento');
+    const idevento = params.get('idevento');
 
     if (!confirm("Tem certeza de que deseja cancelar este evento?")) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/eventos/cancelar-evento/${idEvento}`, {
+        const res = await fetch(`http://localhost:3000/api/eventos/cancelar-evento/${idevento}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });

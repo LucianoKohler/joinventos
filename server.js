@@ -1,13 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db');
+const db = require('./db');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// Incluindo rotas à parte
 const usersRoutes = require("./routes/users");
 const eventosRoutes = require('./routes/eventos');
 const localizacoesRoutes = require('./routes/localizacoes');
@@ -16,9 +15,6 @@ const apresentadoresRoutes = require('./routes/apresentadores');
 const servicosRoutes = require('./routes/servicos');
 const relatoriosRoutes = require('./routes/relatorios');
 
-
-
-// Definindo o caminho para as rotas
 app.use("/api/users", usersRoutes);
 app.use('/api/eventos', eventosRoutes);
 app.use('/api/localizacoes', localizacoesRoutes);
@@ -27,33 +23,15 @@ app.use('/api/apresentadores', apresentadoresRoutes);
 app.use('/api/servicos', servicosRoutes);
 app.use('/api/relatorios', relatoriosRoutes);
 
-
-// Exemplo de get
+// Rota teste
 app.get('/api/dados', async (req, res) => {
     try {
-        const resultado = await pool.query('SELECT * FROM cliente');
-        res.json(resultado.rows);
+        const database = await db.getDb();
+        const clientes = await database.collection('clientes').find().toArray();
+        res.json(clientes);
     } catch (err) {
         console.error(err);
         res.status(500).send('Erro no servidor');
-    }
-});
-
-app.get('/api/debug-tabelas', async (req, res) => {
-    try {
-        const resultado = await pool.query(`
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public';
-        `);
-        
-        res.json({
-            sucesso: true,
-            tabelasEncontradas: resultado.rows
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ erro: 'Erro ao consultar o banco', detalhe: err.message });
     }
 });
 
